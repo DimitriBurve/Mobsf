@@ -563,6 +563,7 @@ class Environment:
             FNULL = open(os.devnull, 'w')
             args = [adb, '-s', self.identifier, 'emu', 'kill']
             subprocess.call(args, stderr=FNULL)
+            # os.system("adb emu kill")
         except:
             PrintException("[ERROR] Stopping MobSF Emulator")
 

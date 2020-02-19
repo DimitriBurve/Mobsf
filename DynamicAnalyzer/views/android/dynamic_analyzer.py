@@ -3,6 +3,7 @@
 import logging
 import os
 import time
+import subprocess
 
 from shelljob import proc
 
@@ -124,7 +125,13 @@ def dynamic_analyzer(request):
         app_dir = os.path.join(settings.UPLD_DIR,
                                bin_hash + '/')  # APP DIRECTORY
         apk_path = app_dir + bin_hash + '.apk'  # APP PATH
-        env.adb_command(['install', '-r', apk_path], False, True)
+        subprocess.call(
+            ["adb",
+             "install",
+             "-g",
+             apk_path]
+        )
+        # env.adb_command(['install', '-g', apk_path], False, True)
         print('Testing Environment is Ready!')
         context = {'screen_witdth': screen_width,
                    'screen_height': screen_height,

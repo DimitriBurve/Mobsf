@@ -290,6 +290,10 @@ def delete_scan(request, api=False):
                     StaticAnalyzerAndroid.objects.filter(MD5=md5_hash).delete()
                     StaticAnalyzerIOS.objects.filter(MD5=md5_hash).delete()
                     StaticAnalyzerWindows.objects.filter(MD5=md5_hash).delete()
+                    # Delete FlowDroid result xml
+                    app_flowdroid_result = os.path.join(settings.RESULTS_FLOWDROID_PATH, md5_hash)
+                    if is_file_exists(app_flowdroid_result):
+                        os.remove(app_flowdroid_result)
                     # Delete Upload Dir Contents
                     app_upload_dir = os.path.join(settings.UPLD_DIR, md5_hash)
                     if is_dir_exists(app_upload_dir):

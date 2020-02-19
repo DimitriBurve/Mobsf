@@ -13,6 +13,7 @@ from django.utils.html import escape
 from DynamicAnalyzer.views.android.analysis import (generate_download,
                                                     get_screenshots,
                                                     run_analysis)
+from DynamicAnalyzer.views.android.environment import Environment
 from DynamicAnalyzer.views.android.operations import (is_attack_pattern,
                                                       is_md5,
                                                       is_path_traversal)
@@ -38,6 +39,7 @@ def view_report(request):
     """Dynamic Analysis Report Generation."""
     logger.info('Dynamic Analysis Report Generation')
     try:
+        env = Environment()
         md5_hash = request.GET['hash']
         package = request.GET['package']
         droidmon = {}
@@ -81,6 +83,11 @@ def view_report(request):
                    'version': settings.MOBSF_VER,
                    'title': 'Dynamic Analysis'}
         template = 'dynamic_analysis/android/dynamic_report.html'
+
+        adb = "adb"
+        env.stop_avd(adb)
+        env.delete_avd(settings.AVD_PATH, settings.AVD_DUP_NAME)
+
         return render(request, template, context)
     except Exception as exp:
         logger.exception('Dynamic Analysis Report Generation')
