@@ -5,10 +5,10 @@
     sidebar-collapse
 {% endblock %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static "others/css/terminal.css" %}" type="text/css">
-<link rel="stylesheet" href="{% static "others/css/devices.min.css" %}" type="text/css">
-<link rel="stylesheet" href="{% static "codemirror/codemirror.css" %}" type="text/css">
-<link rel="stylesheet" href="{% static "codemirror/lint.css" %}" type="text/css">
+<link rel="stylesheet" href="{% static 'others/css/terminal.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'others/css/devices.min.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'codemirror/codemirror.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'codemirror/lint.css' %}" type="text/css">
 <style>
      textarea {
         width: 100%;
@@ -62,9 +62,9 @@
   </div>
    <div class="container-fluid">
 
-   
+
    <div class="row">
-          <div class="col-md-12">
+        <div class="col-md-12">
             <div class="card card-default">
               <!-- /.card-header -->
               <div class="card-body">
@@ -73,6 +73,12 @@
                   <a href="#" id="rootca" class="btn btn-primary" role="button">Remove MobSF RootCA</a>
                   <a href="#" id="expactt" class="btn btn-primary" role="button">Start Exported Activity Tester</a>
                   <a href="#" id="actt" class="btn btn-primary" role="button" >Start Activity Tester</a>
+{% if appcrawler == True %}
+                    <a id="appc" class="btn btn-primary" role="button" style="color:white">AppCrawler fuzzing</a>
+{% endif %}
+{% if monkey == True %}
+                    <a id="monk" class="btn btn-primary" role="button" style="color:white">Monkey fuzzing</a>
+{% endif %}
                   <a href="#" id="ss" class="btn btn-primary" role="button">Take a Screenshot</a>
                   <a href="#" id="logstream" class="btn btn-primary">Logcat Stream</a>
                   <a href="../live_api/?hash={{ md5 }}&amp;package={{ package }}" id="apimon" target="_blank" class="btn btn-primary" style='display: none'>Live API Monitor</a>
@@ -127,7 +133,7 @@
               <div class="card-body">
                 <div class="tab-content" id="tabs">
                   <div class="tab-pane fade active show" id="dm" role="tabpanel" aria-labelledby="dm-tab">
-                     
+
                               <textarea id="stat"></textarea>
                 <!--box-->
                 <div id="frida_options" class="box box-primary">
@@ -143,15 +149,15 @@
                         <h4> Default </h4>
                           <label>
                               <input name="default_hooks" type="checkbox" value="api_monitor" checked>
-                              API Monitoring 
+                              API Monitoring
                             </label>
                              <label>
                               <input name="default_hooks" type="checkbox" value="ssl_pinning_bypass" checked>
-                              SSL Pinning Bypass 
+                              SSL Pinning Bypass
                             </label>
                              <label>
                              <input name="default_hooks" type="checkbox"  value="root_bypass" checked>
-                              Root Detection Bypass 
+                              Root Detection Bypass
                             </label>
                              <label>
                             <input name="default_hooks" type="checkbox" value="debugger_check_bypass" checked>
@@ -164,7 +170,7 @@
                             <label>
                             <input name="auxiliary" type="checkbox" value="enum_class" id="enum_class">
                               Enumerate Loaded Classes
-                            </label> 
+                            </label>
                              <label>
                             <input name="auxiliary" type="checkbox" value="string_catch" id="string_catch">
                                Capture Strings
@@ -191,28 +197,28 @@
                             </label>
                              <input type="text" class="form-control" id="cls_trace" placeholder="java.net.Socket,java.io.File,java.lang.String">
                         </div>
-     
+
 
 
                       </div>
                       <!-- /.box-body -->
 
                       <div class="box-footer">
-                     
+
                       <button id="frida_spawn" type="submit" class="btn btn-success">Start Instrumentation</button> <button id="fd_log" type="button" class="btn btn-primary" disabled>Frida Live Logs</button>
                       </div>
                     </form>
                   </div>
-           
+
           <!--tab end-->
 
                   </div>
                   <div class="tab-pane fade" id="errors" role="tabpanel" aria-labelledby="errors-tab">
-                    
-                    
+
+
                     <iframe sandbox frameborder="0" width="100%" height="650px" id="er"></iframe>
-                    
-                    
+
+
                   </div>
                 </div>
               </div>
@@ -256,7 +262,7 @@ Java.perform(function() {
                   </div>
                 </div>
                 <!-- end row-->
-              
+
               </div>
               <!-- /.card-body -->
             </div>
@@ -268,21 +274,21 @@ Java.perform(function() {
             <div class="card card-default">
               <!-- /.card-header -->
               <div class="card-body">
-                   
+
                    <div id="shell">
                     <output></output>
                     <div id="input-line" class="input-line">
                       <div class="prompt"></div><div><input class="cmdline" autofocus /></div>
                     </div>
                   </div>
-              
+
               </div>
               <!-- /.card-body -->
             </div>
             <!-- /.card -->
           </div>
           <!-- /.col -->
-        
+
         </div>
 
         </div>
@@ -323,9 +329,9 @@ function action(url, data, on_success){
   //Add CSRF
   data.csrfmiddlewaretoken ='{{ csrf_token }}';
   $.ajax({
-    url : url, 
+    url : url,
     type : "POST",
-    dataType: "json", 
+    dataType: "json",
     data : data,
     success : function(json){ on_success(json) },
     error : function(xhr, ajaxOptions, thrownError) {
@@ -530,7 +536,7 @@ var Terminal = Terminal || function (cmdLineContainer, outputContainer) {
                     break;
                 case 'help':
                     output('<div class="ls-files">' + CMDS_.join('<br>') + '</div>');
-                    break;                      
+                    break;
                 default:
                     if (cmd === 'shell' && args.length === 0)
                         output("Incomplete command. expecting shell &lt;cmd&gt;");
@@ -595,7 +601,7 @@ $('#my').click(function(e) {
         var offset = $(this).offset();
         var x = e.pageX - offset.left;
         var y = e.pageY - offset.top;
-        x = x * (width/320); 
+        x = x * (width/320);
         y = y * (height/580);
         console.log('X Axis: '+ x + " Y Axis: "+ y);
         action('../touch_events/', {x: x, y: y}, function(json) {
@@ -624,7 +630,7 @@ $("#screen").click(function() {
                 else
                   console.log(json.message)
                });
-          },3000);
+          },500);
       } else {
           $("#screen").text("Show Screen");
           print_status("Screen streaming stopped");
@@ -632,8 +638,8 @@ $("#screen").click(function() {
           clearInterval(screenfunc);
           touch = "off";
       }
-      return false;  
-}); 
+      return false;
+});
 
 //Screenshot
 $("#ss").click(function() {
@@ -646,7 +652,7 @@ $("#ss").click(function() {
         print_status(json.message);
     }
   });
-  return false;  
+  return false;
 });
 
 //MobSF CA
@@ -669,9 +675,9 @@ $("#rootca").click(function() {
       else
         print_status(json.message);
     });
-    return false;  
-}); 
- 
+    return false;
+});
+
 function activity_tester(test){
   action('../activity_tester/', {hash: '{{ md5 }}', package: '{{ package }}', 'test': test}, function(json) {
     if (json.status === "ok")
@@ -687,27 +693,79 @@ function activity_tester(test){
 $("#expactt").click(function()  {
   print_status("Starting Exported Activity tester...")
   activity_tester('exported')
-  return false;  
+  return false;
 });
 
 //Start Activity Tester
 $("#actt").click(function()  {
   print_status("Starting Activity tester...")
   activity_tester('all_activities')
-  return false;  
-}); 
+  return false;
+});
+
+//Start AppCrawler Fuzzer
+     $("#appc").click(function()  {
+                        $('#stat').append("\nStarting AppCrawler Fuzzer...");
+                        $.ajax({
+                                url : "../AppCrawlerFuzzer/",
+                                type : "POST",
+                                dataType: "json",
+                                data : {
+                                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                                    md5: '{{ md5 }}',
+                                    pkg: '{{ package }}',
+                                    },
+                                    success : function(json) {
+                                      if (json.appctest==="done"){
+                                  $('#stat').append("\nAppCrawler Fuzzing Completed.");
+                                  $('#stat').scrollTop($('#stat')[0].scrollHeight);
+                                    }
+
+                                    },
+                                    error : function(xhr,errmsg,err) {
+                                       document.getElementById("er").srcdoc = xhr.responseText;
+                                    }
+                      });
+                    return false;
+                });
+
+     //Start Monkey Fuzzer
+     $("#monk").click(function()  {
+                        $('#stat').append("\nStarting Monkey Fuzzer...");
+                        $.ajax({
+                                url : "../MonkeyFuzzer/",
+                                type : "POST",
+                                dataType: "json",
+                                data : {
+                                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                                    md5: '{{ md5 }}',
+                                    pkg: '{{ package }}',
+                                    },
+                                    success : function(json) {
+                                      if (json.monktest==="done"){
+                                  $('#stat').append("\nMonkey Fuzzing Completed.");
+                                  $('#stat').scrollTop($('#stat')[0].scrollHeight);
+                                    }
+
+                                    },
+                                    error : function(xhr,errmsg,err) {
+                                       document.getElementById("er").srcdoc = xhr.responseText;
+                                    }
+                      });
+                    return false;
+                });
 
 // Logcat Stream
 $("#logstream").click(function() {
     print_status("Logcat Steaming started");
-    setTimeout(function(){ window.open('../logcat/?package={{ package }}', '_blank');}, 500);   
-    return false;  
-}); 
+    setTimeout(function(){ window.open('../logcat/?package={{ package }}', '_blank');}, 500);
+    return false;
+});
 // Frida logs
 $("#fd_log").click(function() {
     print_status("Streaming Frida logs");
-    setTimeout(function(){ window.open('../frida_logs/?hash={{ md5 }}&package={{ package }}', '_blank');}, 100);   
-    return false;  
+    setTimeout(function(){ window.open('../frida_logs/?hash={{ md5 }}&package={{ package }}', '_blank');}, 100);
+    return false;
 });
 
 
@@ -719,7 +777,7 @@ $("#loadscript").click(function() {
         editor.getDoc().setValue(json.content);
     }
   });
-  return false;  
+  return false;
 });
 
 // Frida Spawn
@@ -727,7 +785,7 @@ $("#frida_spawn").click(function() {
     print_status("Instrumenting app with frida");
     $('#fd_log').removeAttr('disabled');
     var default_hooks = [];
-    $.each($("input[name='default_hooks']:checked"), function(){            
+    $.each($("input[name='default_hooks']:checked"), function(){
         default_hooks.push($(this).val());
     });
     if(default_hooks.includes("api_monitor"))
@@ -736,7 +794,7 @@ $("#frida_spawn").click(function() {
       $('#apimon').hide();
 
     var auxiliary_hooks = [];
-    $.each($("input[name='auxiliary']:checked"), function(){            
+    $.each($("input[name='auxiliary']:checked"), function(){
         auxiliary_hooks.push($(this).val());
     });
 
@@ -755,8 +813,8 @@ $("#frida_spawn").click(function() {
     else
       print_status(json.message);
   });
-  return false;  
-}); 
+  return false;
+});
 
 
 //Dump App data
@@ -772,7 +830,7 @@ function dump(){
     }
   });
 }
-  
+
 //Finish & Generate Report
 $("#stop").one( "click", function() {
   print_status("Collecting data...");
@@ -792,8 +850,10 @@ $("#stop").one( "click", function() {
     }
     dump();
   });
-  return false;  
-}); 
+  return false;
+});
+
+
 
 
 //end document.ready

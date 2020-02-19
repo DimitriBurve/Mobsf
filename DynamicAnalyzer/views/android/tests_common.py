@@ -147,8 +147,7 @@ def collect_logs(request):
         dumpsys = env.adb_command(['dumpsys'], True)
         with open(dout, 'wb') as flip:
             flip.write(dumpsys)
-        if env.get_android_version() < 5:
-            download_xposed_log(apk_dir)
+        download_xposed_log(apk_dir)
         env.adb_command(['am', 'force-stop', package], True)
         logger.info('Stopping app')
         # Unset Global Proxy

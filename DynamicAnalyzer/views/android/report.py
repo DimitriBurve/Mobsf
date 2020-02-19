@@ -59,6 +59,10 @@ def view_report(request):
         analysis_result = run_analysis(app_dir, md5_hash, package)
         generate_download(app_dir, md5_hash, download_dir, package)
         images = get_screenshots(md5_hash, download_dir)
+        print("[INFO] Droidmon :")
+        print(droidmon)
+        print("\n[INFO] APIMON :")
+        print(apimon)
         context = {'md5': md5_hash,
                    'emails': analysis_result['emails'],
                    'urls': analysis_result['urls'],

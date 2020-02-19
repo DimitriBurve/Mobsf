@@ -247,7 +247,7 @@ RULES = [
                  'Sensitive information should never be logged.'),
         'type': 'regex',
         'regex1': (r'Log\.(v|d|i|w|e|f|s)|'
-                   r'System\.out\.print|System\.err\.print'),
+                   r'System\.Results\.print|System\.err\.print'),
         'level': 'info',
         'match': 'single_regex',
         'input_case': 'exact',

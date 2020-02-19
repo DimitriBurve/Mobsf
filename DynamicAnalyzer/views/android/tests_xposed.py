@@ -19,7 +19,7 @@ def get_hooked_apis():
         'api_fileio': {
             'name': 'File IO',
             'regex': r'libcore.io|android.app.Shared'
-                    r'PreferencesImpl\\$EditorImpl',
+                     r'PreferencesImpl\\$EditorImpl',
             'icon': 'fas fa-file-signature',
         },
         'api_reflect': {
@@ -127,11 +127,13 @@ def droidmon_api_analysis(app_dir, package):
             _, value = line.split(res_id, 1)
             try:
                 apis = json.loads(value, strict=False)
+                print("[INFO] Droidmon APIS")
+                print(apis)
                 call_data = {}
                 call_data['class'] = apis['class']
                 call_data['method'] = apis['method']
-                if apis.get('return'):
-                    call_data['return'] = apis['return']
+                if apis.get('result'):
+                    call_data['return'] = apis['result']
                 if apis.get('args'):
                     call_data['args'] = apis['args']
                 for api, details in hooked_apis.items():
@@ -184,4 +186,4 @@ def download_xposed_log(apk_dir):
     env.adb_command(['pull',
                      xposed_out,
                      apk_dir + 'x_logcat.txt'])
-    logger.info('Downloading droidmon API monitor logs')
+    print('Downloading droidmon API monitor logs')

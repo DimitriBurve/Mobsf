@@ -1,7 +1,9 @@
 """Common Utils."""
 import ast
+import datetime
 import hashlib
 import io
+import linecache
 import logging
 import ntpath
 import os
@@ -14,6 +16,7 @@ import subprocess
 import stat
 import sys
 import sqlite3
+import time
 import unicodedata
 import threading
 from distutils.version import LooseVersion
@@ -423,20 +426,61 @@ def find_process_by(name):
 
 
 def get_device():
-    """Get Device."""
-    if os.getenv('ANALYZER_IDENTIFIER'):
-        return os.getenv('ANALYZER_IDENTIFIER')
-    if settings.ANALYZER_IDENTIFIER:
-        return settings.ANALYZER_IDENTIFIER
+    # """Get Device."""
+    # if os.getenv('ANALYZER_IDENTIFIER'):
+    #     return os.getenv('ANALYZER_IDENTIFIER')
+    # if settings.ANALYZER_IDENTIFIER:
+    #     return settings.ANALYZER_IDENTIFIER
+    # else:
+    #     dev_id = ''
+    #     out = subprocess.check_output([get_adb(), 'devices']).splitlines()
+    #     if len(out) > 2:
+    #         dev_id = out[1].decode('utf-8').split('\t')[0]
+    #         return dev_id
+    # logger.error('Is the Android VM running?\n'
+    #              'MobSF cannot identify device id.\n'
+    #              'Please set ANALYZER_IDENTIFIER in MobSF/settings.py')
+    """Get Device Type"""
+    try:
+        if settings.ANALYZER_IDENTIFIER == "MobSF_REAL_DEVICE":
+            return settings.DEVICE_IP + ":" + str(settings.DEVICE_ADB_PORT)
+        elif settings.ANALYZER_IDENTIFIER == "New_Device_API_23_DUP":
+            return 'emulator-' + str(settings.AVD_ADB_PORT)
+        else:
+            return settings.VM_IP + ":" + str(settings.VM_ADB_PORT)
+    except:
+        PrintException(
+            "[ERROR] Getting ADB Connection Identifier for Device/VM")
+
+
+def isFileExists(file_path):
+    if os.path.isfile(file_path):
+        return True
     else:
-        dev_id = ''
-        out = subprocess.check_output([get_adb(), 'devices']).splitlines()
-        if len(out) > 2:
-            dev_id = out[1].decode('utf-8').split('\t')[0]
-            return dev_id
-    logger.error('Is the Android VM running?\n'
-                 'MobSF cannot identify device id.\n'
-                 'Please set ANALYZER_IDENTIFIER in MobSF/settings.py')
+        return False
+
+
+def getADB(TOOLSDIR):
+    """Get ADB binary path"""
+    try:
+        if len(settings.ADB_BINARY) > 0 and isFileExists(settings.ADB_BINARY):
+            return settings.ADB_BINARY
+        else:
+            adb = 'adb'
+            if platform.system() == "Darwin":
+                adb_dir = os.path.join(TOOLSDIR, 'adb/mac/')
+                subprocess.call(["chmod", "777", adb_dir])
+                adb = os.path.join(TOOLSDIR, 'adb/mac/adb')
+            elif platform.system() == "Linux":
+                adb_dir = os.path.join(TOOLSDIR, 'adb/linux/')
+                subprocess.call(["chmod", "777", adb_dir])
+                adb = os.path.join(TOOLSDIR, 'adb/linux/adb')
+            elif platform.system() == "Windows":
+                adb = os.path.join(TOOLSDIR, 'adb/windows/adb.exe')
+            return adb
+    except:
+        PrintException("[ERROR] Getting ADB Location")
+        return "adb"
 
 
 def get_adb():
@@ -474,6 +518,34 @@ def get_adb():
                            '\nMake sure a Genymotion Android VM'
                            ' is running before performing Dynamic Analyis.')
     return 'adb'
+
+def PrintException(msg, web=False):
+    try:
+        LOGPATH = settings.LOG_DIR
+    except:
+        LOGPATH = os.path.join(settings.BASE_DIR, "logs/")
+    if not os.path.exists(LOGPATH):
+        os.makedirs(LOGPATH)
+    exc_type, exc_obj, tb = sys.exc_info()
+    f = tb.tb_frame
+    lineno = tb.tb_lineno
+    filename = f.f_code.co_filename
+    linecache.checkcache(filename)
+    line = linecache.getline(filename, lineno, f.f_globals)
+    ts = time.time()
+    st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+    dat = '\n[' + st + ']\n' + msg + \
+        ' ({0}, LINE {1} "{2}"): {3}'.format(
+            filename, lineno, line.strip(), exc_obj)
+    if platform.system() == "Windows":
+        print(dat)
+    else:
+        if web:
+            print(Color.BOLD + Color.ORANGE + dat + Color.END)
+        else:
+            print(Color.BOLD + Color.RED + dat + Color.END)
+    with open(LOGPATH + 'MobSF.log', 'a') as f:
+        f.write(dat)
 
 
 def check_basic_env():

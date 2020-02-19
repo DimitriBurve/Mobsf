@@ -1,0 +1,1051 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="parent" default="all">
+  
+  
+  <property file="parent.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/*.rbc/**"/>
+    <exclude name="**/*.yarb/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.swc"/>
+    <include name="*.zip"/>
+    <include name="*.egg"/>
+    <include name="*.ane"/>
+    <include name="*.jar"/>
+    <include name="*.ear"/>
+    <include name="*.klib"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+    <exclude name="**/?*.aj"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.1.8" value="${jdk.home.1.8}/bin"/>
+  <path id="jdk.classpath.1.8">
+    <fileset dir="${jdk.home.1.8}">
+      <include name="jre/lib/charsets.jar"/>
+      <include name="jre/lib/ext/cldrdata.jar"/>
+      <include name="jre/lib/ext/dnsns.jar"/>
+      <include name="jre/lib/ext/icedtea-sound.jar"/>
+      <include name="jre/lib/ext/jaccess.jar"/>
+      <include name="jre/lib/ext/java-atk-wrapper.jar"/>
+      <include name="jre/lib/ext/localedata.jar"/>
+      <include name="jre/lib/ext/nashorn.jar"/>
+      <include name="jre/lib/ext/sunec.jar"/>
+      <include name="jre/lib/ext/sunjce_provider.jar"/>
+      <include name="jre/lib/ext/sunpkcs11.jar"/>
+      <include name="jre/lib/ext/zipfs.jar"/>
+      <include name="jre/lib/jce.jar"/>
+      <include name="jre/lib/jsse.jar"/>
+      <include name="jre/lib/management-agent.jar"/>
+      <include name="jre/lib/resources.jar"/>
+      <include name="jre/lib/rt.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.1.8}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.1.8}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.1.8"/>
+  
+  
+  <!-- Project Libraries -->
+  
+  <path id="library.maven:_ca.mcgill.sable:axmlprinter:2016-07-27.classpath">
+    <pathelement location="${path.variable.maven_repository}/ca/mcgill/sable/axmlprinter/2016-07-27/axmlprinter-2016-07-27.jar"/>
+  </path>
+  
+  <path id="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath">
+    <pathelement location="${path.variable.maven_repository}/ca/mcgill/sable/jasmin/2.5.0-SNAPSHOT/jasmin-2.5.0-20171106.170234-163.jar"/>
+  </path>
+  
+  <path id="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/ca/mcgill/sable/java_cup/0.9.2/java_cup-0.9.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_ca.mcgill.sable:polyglot:2006.classpath">
+    <pathelement location="${path.variable.maven_repository}/ca/mcgill/sable/polyglot/2006/polyglot-2006.jar"/>
+  </path>
+  
+  <path id="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/ca/mcgill/sable/soot/3.2.0/soot-3.2.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/errorprone/error_prone_annotations/2.1.3/error_prone_annotations-2.1.3.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.guava:guava:25.1-jre.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/guava/guava/25.1-jre/guava-25.1-jre.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar"/>
+  </path>
+  
+  <path id="library.maven:_com.google.protobuf:protobuf-java:2.5.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/com/google/protobuf/protobuf-java/2.5.0/protobuf-java-2.5.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_commons-cli:commons-cli:1.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/commons-cli/commons-cli/1.4/commons-cli-1.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_commons-io:commons-io:2.6.classpath">
+    <pathelement location="${path.variable.maven_repository}/commons-io/commons-io/2.6/commons-io-2.6.jar"/>
+  </path>
+  
+  <path id="library.maven:_heros:heros:1.0.1-snapshot.classpath">
+    <pathelement location="${path.variable.maven_repository}/heros/heros/1.0.1-SNAPSHOT/heros-1.0.1-20181001.111040-3.jar"/>
+  </path>
+  
+  <path id="library.maven:_java.j2ee:j2ee:1.4.classpath">
+    <pathelement location="${path.variable.maven_repository}/java/j2ee/j2ee/1.4/j2ee-1.4.jar"/>
+  </path>
+  
+  <path id="library.maven:_junit:junit:4.12.classpath">
+    <pathelement location="${path.variable.maven_repository}/junit/junit/4.12/junit-4.12.jar"/>
+  </path>
+  
+  <path id="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath">
+    <pathelement location="${path.variable.maven_repository}/net/sf/trove4j/trove4j/3.0.3/trove4j-3.0.3.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/checkerframework/checker-qual/2.0.0/checker-qual-2.0.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/codehaus/mojo/animal-sniffer-annotations/1.14/animal-sniffer-annotations-1.14.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.functionaljava:functionaljava:4.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/functionaljava/functionaljava/4.2/functionaljava-4.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/ow2/asm/asm-debug-all/5.2/asm-debug-all-5.2.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.slf4j:slf4j-simple:1.7.5.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/slf4j/slf4j-simple/1.7.5/slf4j-simple-1.7.5.jar"/>
+  </path>
+  
+  <path id="library.maven:_org.smali:dexlib2:2.2.5.classpath">
+    <pathelement location="${path.variable.maven_repository}/org/smali/dexlib2/2.2.5/dexlib2-2.2.5.jar"/>
+  </path>
+  
+  <path id="library.maven:_pxb.android:axml:2.0.0-snapshot.classpath">
+    <pathelement location="${path.variable.maven_repository}/pxb/android/axml/2.0.0-SNAPSHOT/axml-2.0.0-20180418.135652-4.jar"/>
+  </path>
+  
+  <path id="library.maven:_pxb.android:axml:2.0.0.classpath">
+    <pathelement location="${path.variable.maven_repository}/pxb/android/axml/2.0.0/axml-2.0.0.jar"/>
+  </path>
+  
+  <path id="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath">
+    <pathelement location="${path.variable.maven_repository}/xmlpull/xmlpull/1.1.3.4d_b4_min/xmlpull-1.1.3.4d_b4_min.jar"/>
+  </path>
+  <!-- Register Custom Compiler Taskdefs -->
+  <property name="javac2.home" value="${idea.home}/lib"/>
+  <path id="javac2.classpath">
+    <fileset dir="${javac2.home}">
+      <include name="javac2.jar"/>
+      <include name="jdom.jar"/>
+      <include name="asm-all*.jar"/>
+      <include name="forms-*.jar"/>
+    </fileset>
+  </path>
+  <target name="register.custom.compilers">
+    <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
+    <taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions" classpathref="javac2.classpath"/>
+  </target>
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module parent -->
+  
+  <dirname property="module.parent.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.parent" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.parent" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.parent" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.parent" value="-encoding UTF-8 -source 8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="parent.output.dir" value="${module.parent.basedir}/target/classes"/>
+  <property name="parent.testoutput.dir" value="${module.parent.basedir}/target/test-classes"/>
+  
+  <path id="parent.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="parent.module.production.classpath">
+    <path refid="${module.jdk.classpath.parent}"/>
+  </path>
+  
+  <path id="parent.runtime.production.module.classpath">
+    <pathelement location="${parent.output.dir}"/>
+  </path>
+  
+  <path id="parent.module.classpath">
+    <path refid="${module.jdk.classpath.parent}"/>
+    <pathelement location="${parent.output.dir}"/>
+  </path>
+  
+  <path id="parent.runtime.module.classpath">
+    <pathelement location="${parent.testoutput.dir}"/>
+    <pathelement location="${parent.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.parent">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.parent">
+    <patternset refid="excluded.from.module.parent"/>
+  </patternset>
+  
+  
+  <target name="compile.module.parent" depends="compile.module.parent.production,compile.module.parent.tests" description="Compile module parent"/>
+  
+  <target name="compile.module.parent.production" depends="register.custom.compilers" description="Compile module parent; production classes"/>
+  
+  <target name="compile.module.parent.tests" depends="register.custom.compilers,compile.module.parent.production" description="compile module parent; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.parent" description="cleanup module">
+    <delete dir="${parent.output.dir}"/>
+    <delete dir="${parent.testoutput.dir}"/>
+  </target>
+  
+  
+  <!-- Module soot-infoflow -->
+  
+  <dirname property="module.soot-infoflow.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.soot-infoflow" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.soot-infoflow" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.soot-infoflow" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.soot-infoflow" value="-encoding UTF-8 -source 8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="soot-infoflow.output.dir" value="${module.soot-infoflow.basedir}/soot-infoflow/build/classes"/>
+  <property name="soot-infoflow.testoutput.dir" value="${module.soot-infoflow.basedir}/soot-infoflow/build/testclasses"/>
+  
+  <path id="soot-infoflow.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="soot-infoflow.module.production.classpath">
+    <path refid="${module.jdk.classpath.soot-infoflow}"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+  </path>
+  
+  <path id="soot-infoflow.runtime.production.module.classpath">
+    <pathelement location="${soot-infoflow.output.dir}"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+  </path>
+  
+  <path id="soot-infoflow.module.classpath">
+    <path refid="${module.jdk.classpath.soot-infoflow}"/>
+    <pathelement location="${soot-infoflow.output.dir}"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+    <path refid="library.maven:_java.j2ee:j2ee:1.4.classpath"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+  </path>
+  
+  <path id="soot-infoflow.runtime.module.classpath">
+    <pathelement location="${soot-infoflow.testoutput.dir}"/>
+    <pathelement location="${soot-infoflow.output.dir}"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+    <path refid="library.maven:_java.j2ee:j2ee:1.4.classpath"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.soot-infoflow">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.soot-infoflow">
+    <patternset refid="excluded.from.module.soot-infoflow"/>
+  </patternset>
+  
+  <path id="soot-infoflow.module.sourcepath">
+    <dirset dir="${module.soot-infoflow.basedir}/soot-infoflow">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  <path id="soot-infoflow.module.test.sourcepath">
+    <dirset dir="${module.soot-infoflow.basedir}/soot-infoflow">
+      <include name="test"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.soot-infoflow" depends="compile.module.soot-infoflow.production,compile.module.soot-infoflow.tests" description="Compile module soot-infoflow"/>
+  
+  <target name="compile.module.soot-infoflow.production" depends="register.custom.compilers" description="Compile module soot-infoflow; production classes">
+    <mkdir dir="${soot-infoflow.output.dir}"/>
+    <javac2 destdir="${soot-infoflow.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.soot-infoflow}/javac">
+      <compilerarg line="${compiler.args.soot-infoflow}"/>
+      <bootclasspath refid="soot-infoflow.module.bootclasspath"/>
+      <classpath refid="soot-infoflow.module.production.classpath"/>
+      <src refid="soot-infoflow.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.soot-infoflow"/>
+    </javac2>
+    
+    <copy todir="${soot-infoflow.output.dir}">
+      <fileset dir="${module.soot-infoflow.basedir}/soot-infoflow/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.soot-infoflow.tests" depends="register.custom.compilers,compile.module.soot-infoflow.production" description="compile module soot-infoflow; test classes" unless="skip.tests">
+    <mkdir dir="${soot-infoflow.testoutput.dir}"/>
+    <javac2 destdir="${soot-infoflow.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.soot-infoflow}/javac">
+      <compilerarg line="${compiler.args.soot-infoflow}"/>
+      <bootclasspath refid="soot-infoflow.module.bootclasspath"/>
+      <classpath refid="soot-infoflow.module.classpath"/>
+      <src refid="soot-infoflow.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.soot-infoflow"/>
+    </javac2>
+    
+    <copy todir="${soot-infoflow.testoutput.dir}">
+      <fileset dir="${module.soot-infoflow.basedir}/soot-infoflow/test">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.soot-infoflow" description="cleanup module">
+    <delete dir="${soot-infoflow.output.dir}"/>
+    <delete dir="${soot-infoflow.testoutput.dir}"/>
+  </target>
+  
+  
+  <!-- Module soot-infoflow-android -->
+  
+  <dirname property="module.soot-infoflow-android.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.soot-infoflow-android" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.soot-infoflow-android" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.soot-infoflow-android" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.soot-infoflow-android" value="-encoding UTF-8 -source 7 -target 1.7 ${compiler.args}"/>
+  
+  <property name="soot-infoflow-android.output.dir" value="${module.soot-infoflow-android.basedir}/soot-infoflow-android/build/classes"/>
+  <property name="soot-infoflow-android.testoutput.dir" value="${module.soot-infoflow-android.basedir}/soot-infoflow-android/build/testclasses"/>
+  
+  <path id="soot-infoflow-android.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="soot-infoflow-android.module.production.classpath">
+    <path refid="${module.jdk.classpath.soot-infoflow-android}"/>
+    <pathelement location="${soot-infoflow.output.dir}"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:axmlprinter:2016-07-27.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.5.0.classpath"/>
+  </path>
+  
+  <path id="soot-infoflow-android.runtime.production.module.classpath">
+    <pathelement location="${soot-infoflow-android.output.dir}"/>
+    <path refid="soot-infoflow.runtime.production.module.classpath"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:axmlprinter:2016-07-27.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.5.0.classpath"/>
+  </path>
+  
+  <path id="soot-infoflow-android.module.classpath">
+    <path refid="${module.jdk.classpath.soot-infoflow-android}"/>
+    <pathelement location="${soot-infoflow-android.output.dir}"/>
+    <pathelement location="${soot-infoflow.testoutput.dir}"/>
+    <pathelement location="${soot-infoflow.output.dir}"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:axmlprinter:2016-07-27.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.5.0.classpath"/>
+  </path>
+  
+  <path id="soot-infoflow-android.runtime.module.classpath">
+    <pathelement location="${soot-infoflow-android.testoutput.dir}"/>
+    <pathelement location="${soot-infoflow-android.output.dir}"/>
+    <path refid="soot-infoflow.runtime.module.classpath"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:axmlprinter:2016-07-27.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.5.0.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.soot-infoflow-android">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.soot-infoflow-android">
+    <patternset refid="excluded.from.module.soot-infoflow-android"/>
+  </patternset>
+  
+  <path id="soot-infoflow-android.module.sourcepath">
+    <dirset dir="${module.soot-infoflow-android.basedir}/soot-infoflow-android">
+      <include name="schema"/>
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  <path id="soot-infoflow-android.module.test.sourcepath">
+    <dirset dir="${module.soot-infoflow-android.basedir}/soot-infoflow-android">
+      <include name="test"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.soot-infoflow-android" depends="compile.module.soot-infoflow-android.production,compile.module.soot-infoflow-android.tests" description="Compile module soot-infoflow-android"/>
+  
+  <target name="compile.module.soot-infoflow-android.production" depends="register.custom.compilers,compile.module.soot-infoflow" description="Compile module soot-infoflow-android; production classes">
+    <mkdir dir="${soot-infoflow-android.output.dir}"/>
+    <javac2 destdir="${soot-infoflow-android.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.soot-infoflow-android}/javac">
+      <compilerarg line="${compiler.args.soot-infoflow-android}"/>
+      <bootclasspath refid="soot-infoflow-android.module.bootclasspath"/>
+      <classpath refid="soot-infoflow-android.module.production.classpath"/>
+      <src refid="soot-infoflow-android.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.soot-infoflow-android"/>
+    </javac2>
+    
+    <copy todir="${soot-infoflow-android.output.dir}">
+      <fileset dir="${module.soot-infoflow-android.basedir}/soot-infoflow-android/schema">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.soot-infoflow-android.basedir}/soot-infoflow-android/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.soot-infoflow-android.tests" depends="register.custom.compilers,compile.module.soot-infoflow-android.production" description="compile module soot-infoflow-android; test classes" unless="skip.tests">
+    <mkdir dir="${soot-infoflow-android.testoutput.dir}"/>
+    <javac2 destdir="${soot-infoflow-android.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.soot-infoflow-android}/javac">
+      <compilerarg line="${compiler.args.soot-infoflow-android}"/>
+      <bootclasspath refid="soot-infoflow-android.module.bootclasspath"/>
+      <classpath refid="soot-infoflow-android.module.classpath"/>
+      <src refid="soot-infoflow-android.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.soot-infoflow-android"/>
+    </javac2>
+    
+    <copy todir="${soot-infoflow-android.testoutput.dir}">
+      <fileset dir="${module.soot-infoflow-android.basedir}/soot-infoflow-android/test">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.soot-infoflow-android" description="cleanup module">
+    <delete dir="${soot-infoflow-android.output.dir}"/>
+    <delete dir="${soot-infoflow-android.testoutput.dir}"/>
+  </target>
+  
+  
+  <!-- Module soot-infoflow-summaries -->
+  
+  <dirname property="module.soot-infoflow-summaries.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.soot-infoflow-summaries" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.soot-infoflow-summaries" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.soot-infoflow-summaries" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.soot-infoflow-summaries" value="-encoding UTF-8 -source 8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="soot-infoflow-summaries.output.dir" value="${module.soot-infoflow-summaries.basedir}/soot-infoflow-summaries/build/classes"/>
+  <property name="soot-infoflow-summaries.testoutput.dir" value="${module.soot-infoflow-summaries.basedir}/soot-infoflow-summaries/build/testclasses"/>
+  
+  <path id="soot-infoflow-summaries.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="soot-infoflow-summaries.module.production.classpath">
+    <path refid="${module.jdk.classpath.soot-infoflow-summaries}"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <pathelement location="${soot-infoflow.output.dir}"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+    <path refid="library.maven:_commons-cli:commons-cli:1.4.classpath"/>
+  </path>
+  
+  <path id="soot-infoflow-summaries.runtime.production.module.classpath">
+    <pathelement location="${soot-infoflow-summaries.output.dir}"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <path refid="soot-infoflow.runtime.production.module.classpath"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+    <path refid="library.maven:_commons-cli:commons-cli:1.4.classpath"/>
+  </path>
+  
+  <path id="soot-infoflow-summaries.module.classpath">
+    <path refid="${module.jdk.classpath.soot-infoflow-summaries}"/>
+    <pathelement location="${soot-infoflow-summaries.output.dir}"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <pathelement location="${soot-infoflow.testoutput.dir}"/>
+    <pathelement location="${soot-infoflow.output.dir}"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+    <path refid="library.maven:_commons-cli:commons-cli:1.4.classpath"/>
+  </path>
+  
+  <path id="soot-infoflow-summaries.runtime.module.classpath">
+    <pathelement location="${soot-infoflow-summaries.testoutput.dir}"/>
+    <pathelement location="${soot-infoflow-summaries.output.dir}"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <path refid="soot-infoflow.runtime.module.classpath"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_junit:junit:4.12.classpath"/>
+    <path refid="library.maven:_org.hamcrest:hamcrest-core:1.3.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+    <path refid="library.maven:_commons-cli:commons-cli:1.4.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.soot-infoflow-summaries">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.soot-infoflow-summaries">
+    <patternset refid="excluded.from.module.soot-infoflow-summaries"/>
+  </patternset>
+  
+  <path id="soot-infoflow-summaries.module.sourcepath">
+    <dirset dir="${module.soot-infoflow-summaries.basedir}/soot-infoflow-summaries">
+      <include name="schema"/>
+      <include name="src"/>
+      <include name="summariesManual"/>
+    </dirset>
+  </path>
+  
+  <path id="soot-infoflow-summaries.module.test.sourcepath">
+    <dirset dir="${module.soot-infoflow-summaries.basedir}/soot-infoflow-summaries">
+      <include name="test"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.soot-infoflow-summaries" depends="compile.module.soot-infoflow-summaries.production,compile.module.soot-infoflow-summaries.tests" description="Compile module soot-infoflow-summaries"/>
+  
+  <target name="compile.module.soot-infoflow-summaries.production" depends="register.custom.compilers,compile.module.soot-infoflow" description="Compile module soot-infoflow-summaries; production classes">
+    <mkdir dir="${soot-infoflow-summaries.output.dir}"/>
+    <javac2 destdir="${soot-infoflow-summaries.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.soot-infoflow-summaries}/javac">
+      <compilerarg line="${compiler.args.soot-infoflow-summaries}"/>
+      <bootclasspath refid="soot-infoflow-summaries.module.bootclasspath"/>
+      <classpath refid="soot-infoflow-summaries.module.production.classpath"/>
+      <src refid="soot-infoflow-summaries.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.soot-infoflow-summaries"/>
+    </javac2>
+    
+    <copy todir="${soot-infoflow-summaries.output.dir}">
+      <fileset dir="${module.soot-infoflow-summaries.basedir}/soot-infoflow-summaries/schema">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.soot-infoflow-summaries.basedir}/soot-infoflow-summaries/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.soot-infoflow-summaries.basedir}/soot-infoflow-summaries/summariesManual">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.soot-infoflow-summaries.tests" depends="register.custom.compilers,compile.module.soot-infoflow-summaries.production" description="compile module soot-infoflow-summaries; test classes" unless="skip.tests">
+    <mkdir dir="${soot-infoflow-summaries.testoutput.dir}"/>
+    <javac2 destdir="${soot-infoflow-summaries.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.soot-infoflow-summaries}/javac">
+      <compilerarg line="${compiler.args.soot-infoflow-summaries}"/>
+      <bootclasspath refid="soot-infoflow-summaries.module.bootclasspath"/>
+      <classpath refid="soot-infoflow-summaries.module.classpath"/>
+      <src refid="soot-infoflow-summaries.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.soot-infoflow-summaries"/>
+    </javac2>
+    
+    <copy todir="${soot-infoflow-summaries.testoutput.dir}">
+      <fileset dir="${module.soot-infoflow-summaries.basedir}/soot-infoflow-summaries/test">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.soot-infoflow-summaries" description="cleanup module">
+    <delete dir="${soot-infoflow-summaries.output.dir}"/>
+    <delete dir="${soot-infoflow-summaries.testoutput.dir}"/>
+  </target>
+  
+  
+  <!-- Module soot-infoflow-cmd -->
+  
+  <dirname property="module.soot-infoflow-cmd.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.soot-infoflow-cmd" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.soot-infoflow-cmd" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.soot-infoflow-cmd" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.soot-infoflow-cmd" value="-encoding UTF-8 -source 7 -target 1.7 ${compiler.args}"/>
+  
+  <property name="soot-infoflow-cmd.output.dir" value="${module.soot-infoflow-cmd.basedir}/soot-infoflow-cmd/build/classes"/>
+  <property name="soot-infoflow-cmd.testoutput.dir" value="${module.soot-infoflow-cmd.basedir}/soot-infoflow-cmd/build/testclasses"/>
+  
+  <path id="soot-infoflow-cmd.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="soot-infoflow-cmd.module.production.classpath">
+    <path refid="${module.jdk.classpath.soot-infoflow-cmd}"/>
+    <pathelement location="${soot-infoflow-android.output.dir}"/>
+    <pathelement location="${soot-infoflow.output.dir}"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:axmlprinter:2016-07-27.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.5.0.classpath"/>
+    <pathelement location="${soot-infoflow-summaries.output.dir}"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <path refid="library.maven:_commons-cli:commons-cli:1.4.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-simple:1.7.5.classpath"/>
+  </path>
+  
+  <path id="soot-infoflow-cmd.runtime.production.module.classpath">
+    <pathelement location="${soot-infoflow-cmd.output.dir}"/>
+    <path refid="soot-infoflow-android.runtime.production.module.classpath"/>
+    <path refid="soot-infoflow.runtime.production.module.classpath"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:axmlprinter:2016-07-27.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.5.0.classpath"/>
+    <path refid="soot-infoflow-summaries.runtime.production.module.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <path refid="library.maven:_commons-cli:commons-cli:1.4.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-simple:1.7.5.classpath"/>
+  </path>
+  
+  <path id="soot-infoflow-cmd.module.classpath">
+    <path refid="${module.jdk.classpath.soot-infoflow-cmd}"/>
+    <pathelement location="${soot-infoflow-cmd.output.dir}"/>
+    <pathelement location="${soot-infoflow-android.testoutput.dir}"/>
+    <pathelement location="${soot-infoflow-android.output.dir}"/>
+    <pathelement location="${soot-infoflow.testoutput.dir}"/>
+    <pathelement location="${soot-infoflow.output.dir}"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:axmlprinter:2016-07-27.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.5.0.classpath"/>
+    <pathelement location="${soot-infoflow-summaries.testoutput.dir}"/>
+    <pathelement location="${soot-infoflow-summaries.output.dir}"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <path refid="library.maven:_commons-cli:commons-cli:1.4.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-simple:1.7.5.classpath"/>
+  </path>
+  
+  <path id="soot-infoflow-cmd.runtime.module.classpath">
+    <pathelement location="${soot-infoflow-cmd.testoutput.dir}"/>
+    <pathelement location="${soot-infoflow-cmd.output.dir}"/>
+    <path refid="soot-infoflow-android.runtime.module.classpath"/>
+    <path refid="soot-infoflow.runtime.module.classpath"/>
+    <path refid="library.maven:_net.sf.trove4j:trove4j:3.0.3.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:jasmin:2.5.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:java_cup:0.9.2.classpath"/>
+    <path refid="library.maven:_pxb.android:axml:2.0.0-snapshot.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:axmlprinter:2016-07-27.classpath"/>
+    <path refid="library.maven:_com.google.protobuf:protobuf-java:2.5.0.classpath"/>
+    <path refid="soot-infoflow-summaries.runtime.module.classpath"/>
+    <path refid="library.maven:_com.google.guava:guava:25.1-jre.classpath"/>
+    <path refid="library.maven:_com.google.code.findbugs:jsr305:3.0.2.classpath"/>
+    <path refid="library.maven:_org.checkerframework:checker-qual:2.0.0.classpath"/>
+    <path refid="library.maven:_com.google.errorprone:error_prone_annotations:2.1.3.classpath"/>
+    <path refid="library.maven:_com.google.j2objc:j2objc-annotations:1.1.classpath"/>
+    <path refid="library.maven:_org.codehaus.mojo:animal-sniffer-annotations:1.14.classpath"/>
+    <path refid="library.maven:_heros:heros:1.0.1-snapshot.classpath"/>
+    <path refid="library.maven:_org.functionaljava:functionaljava:4.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.7.5.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:soot:3.2.0.classpath"/>
+    <path refid="library.maven:_commons-io:commons-io:2.6.classpath"/>
+    <path refid="library.maven:_org.smali:dexlib2:2.2.5.classpath"/>
+    <path refid="library.maven:_org.ow2.asm:asm-debug-all:5.2.classpath"/>
+    <path refid="library.maven:_xmlpull:xmlpull:1.1.3.4d_b4_min.classpath"/>
+    <path refid="library.maven:_ca.mcgill.sable:polyglot:2006.classpath"/>
+    <path refid="library.maven:_commons-cli:commons-cli:1.4.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-simple:1.7.5.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.soot-infoflow-cmd">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.soot-infoflow-cmd">
+    <patternset refid="excluded.from.module.soot-infoflow-cmd"/>
+  </patternset>
+  
+  <path id="soot-infoflow-cmd.module.sourcepath">
+    <dirset dir="${module.soot-infoflow-cmd.basedir}/soot-infoflow-cmd">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.soot-infoflow-cmd" depends="compile.module.soot-infoflow-cmd.production,compile.module.soot-infoflow-cmd.tests" description="Compile module soot-infoflow-cmd"/>
+  
+  <target name="compile.module.soot-infoflow-cmd.production" depends="register.custom.compilers,compile.module.soot-infoflow-android,compile.module.soot-infoflow,compile.module.soot-infoflow-summaries" description="Compile module soot-infoflow-cmd; production classes">
+    <mkdir dir="${soot-infoflow-cmd.output.dir}"/>
+    <javac2 destdir="${soot-infoflow-cmd.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.soot-infoflow-cmd}/javac">
+      <compilerarg line="${compiler.args.soot-infoflow-cmd}"/>
+      <bootclasspath refid="soot-infoflow-cmd.module.bootclasspath"/>
+      <classpath refid="soot-infoflow-cmd.module.production.classpath"/>
+      <src refid="soot-infoflow-cmd.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.soot-infoflow-cmd"/>
+    </javac2>
+    
+    <copy todir="${soot-infoflow-cmd.output.dir}">
+      <fileset dir="${module.soot-infoflow-cmd.basedir}/soot-infoflow-cmd/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.soot-infoflow-cmd.tests" depends="register.custom.compilers,compile.module.soot-infoflow-cmd.production" description="compile module soot-infoflow-cmd; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.soot-infoflow-cmd" description="cleanup module">
+    <delete dir="${soot-infoflow-cmd.output.dir}"/>
+    <delete dir="${soot-infoflow-cmd.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.parent, clean.module.soot-infoflow, clean.module.soot-infoflow-android, clean.module.soot-infoflow-summaries, clean.module.soot-infoflow-cmd" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.parent, compile.module.soot-infoflow, compile.module.soot-infoflow-android, compile.module.soot-infoflow-summaries, compile.module.soot-infoflow-cmd" description="build all modules"/>
+  
+  <target name="all" depends="build.modules" description="build all"/>
+</project>

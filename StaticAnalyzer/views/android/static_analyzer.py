@@ -5,6 +5,8 @@ import logging
 import os
 import re
 import shutil
+import time
+from xml.dom import minidom
 
 import MalwareAnalyzer.views.Trackers as Trackers
 import MalwareAnalyzer.views.VirusTotal as VirusTotal
@@ -44,12 +46,16 @@ from StaticAnalyzer.views.shared_func import (firebase_analysis,
 
 from androguard.core.bytecodes import apk
 
+from DynamicAnalyzer.views.android import environment
+
+# from FlowDroid.soot-infoflow-cmd.src.soot.jimple.infoflow.cmd import MainClass as FlowDroidClass
+
 try:
     import io
+
     StringIO = io.StringIO  # noqa F401
 except ImportError:
     from io import StringIO  # noqa F401
-
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +64,19 @@ logger = logging.getLogger(__name__)
 def key(data, key_name):
     """Return the data for a key_name."""
     return data.get(key_name)
+
+
+def wait(sec):
+    """Wait in Seconds."""
+    logger.info('Waiting for %s seconds...', str(sec))
+    time.sleep(sec)
+
+
+def analyse_flowdroid(apk, file_res):
+    commandFlowDroid = "java" + " -jar " + str(settings.JAVA_PATH_FLOWDROID_MAIN) + " -a " + str(
+        apk) + " -p " + str(settings.ANDROID_PLATEFORM_BINARY) + " -s " + str(
+        settings.SOURCES_AND_SINKS_PATH) + " -cg CHA -cg AUTO -ca FAST -pr FAST -nc -dt 180 -o " + file_res
+    os.system(commandFlowDroid)
 
 
 def static_analyzer(request, api=False):
@@ -78,22 +97,25 @@ def static_analyzer(request, api=False):
         match = re.match('^[0-9a-f]{32}$', checksum)
         if (
                 (
-                    match
+                        match
                 ) and (
-                    filename.lower().endswith('.apk')
-                    or filename.lower().endswith('.zip')
-                ) and (
-                    typ in ['zip', 'apk']
-                )
+                filename.lower().endswith('.apk')
+                or filename.lower().endswith('.zip')
+        ) and (
+                typ in ['zip', 'apk']
+        )
         ):
             app_dic['dir'] = settings.BASE_DIR  # BASE DIR
             app_dic['app_name'] = filename  # APP ORGINAL NAME
             app_dic['md5'] = checksum  # MD5
             app_dic['app_dir'] = os.path.join(settings.UPLD_DIR, app_dic[
-                                              'md5'] + '/')  # APP DIRECTORY
+                'md5'] + '/')  # APP DIRECTORY
             app_dic['tools_dir'] = os.path.join(
                 app_dic['dir'], 'StaticAnalyzer/tools/')  # TOOLS DIR
             logger.info('Starting Analysis on : %s', app_dic['app_name'])
+
+            sauvegarde_resultats = str(settings.RESULTS_FLOWDROID_PATH) + "" + str(
+                app_dic['md5']) + "-results_FlowDroid.xml"
 
             if typ == 'apk':
                 # Check if in DB
@@ -102,13 +124,22 @@ def static_analyzer(request, api=False):
                     MD5=app_dic['md5'])
                 if db_entry.exists() and rescan == '0':
                     context = get_context_from_db_entry(db_entry)
+                    if not is_file_exists(sauvegarde_resultats):
+                        print("[INFO] File not exists")
+                        analyse_flowdroid(app_dic['app_dir'], sauvegarde_resultats)
                 else:
+                    # FlowDroid analysis
+                    print("analysis 1st")
+                    analyse_flowdroid(app_dic['app_dir'], sauvegarde_resultats)
+
                     app_dic['app_file'] = app_dic[
-                        'md5'] + '.apk'  # NEW FILENAME
+                                              'md5'] + '.apk'  # NEW FILENAME
                     app_dic['app_path'] = (app_dic['app_dir']
                                            + app_dic['app_file'])  # APP PATH
 
                     # ANALYSIS BEGINS
+
+                    # Standard Analysis
                     app_dic['size'] = str(
                         file_size(app_dic['app_path'])) + 'MB'  # FILE SIZE
                     app_dic['sha1'], app_dic[
@@ -117,7 +148,7 @@ def static_analyzer(request, api=False):
                     app_dic['files'] = unzip(
                         app_dic['app_path'], app_dic['app_dir'])
                     if not app_dic['files']:
-                        # Can't Analyze APK, bail out.
+                        # Can't Analyze APK, bail Results.
                         msg = 'APK file is invalid or corrupt'
                         if api:
                             return print_n_send_error_response(
@@ -130,7 +161,7 @@ def static_analyzer(request, api=False):
                                 msg,
                                 False)
                     app_dic['certz'] = get_hardcoded_cert_keystore(app_dic[
-                                                                   'files'])
+                                                                       'files'])
 
                     logger.info('APK Extracted')
 
@@ -185,7 +216,7 @@ def static_analyzer(request, api=False):
                         app_dic['app_dir'],
                         app_dic['app_file'])
                     apkid_results = apkid_analysis(app_dic[
-                        'app_dir'], app_dic['app_path'], app_dic['app_name'])
+                                                       'app_dir'], app_dic['app_path'], app_dic['app_name'])
                     tracker = Trackers.Trackers(
                         app_dic['app_dir'], app_dic['tools_dir'])
                     tracker_res = tracker.get_trackers()
@@ -279,6 +310,42 @@ def static_analyzer(request, api=False):
                         os.path.join(app_dic['app_dir'],
                                      app_dic['md5']) + '.apk',
                         app_dic['md5'])
+
+                print("before analyse results")
+                if is_file_exists(sauvegarde_resultats):
+                    mydoc = minidom.parse(sauvegarde_resultats)
+                    item_performance_entry = mydoc.getElementsByTagName('PerformanceEntry')
+                    name_item_leaks = ''
+                    value_leaks = ''
+                    for elem in item_performance_entry:
+                        if elem.attributes['Name'].value == 'LeaksFound':
+                            name_item_leaks = elem.attributes['Name'].value
+                            value_leaks = elem.attributes['Value'].value
+
+                    item_performance_entry = mydoc.getElementsByTagName('Source')
+                    values_methods_source = []  # Tableau valeurs methodes source
+                    for elem in item_performance_entry:
+                        temp = elem.attributes['Method'].value.replace("<", "")
+                        var_final = temp.replace(">", "")
+                        values_methods_source.append(var_final)
+
+                    item_performance_entry = mydoc.getElementsByTagName('Sink')
+                    values_methods_sink = []  # Tableau valeurs methodes sink
+                    for elem in item_performance_entry:
+                        temp = elem.attributes['Method'].value.replace("<", "")
+                        var_final = temp.replace(">", "")
+                        values_methods_sink.append(var_final)
+
+                    # print("[INFO] Flowdroid Results")
+                    # print(name_item_leaks)
+                    # print(value_leaks)
+                    # print(values_methods_source)
+                    # print(values_methods_sink)
+
+                    context['leaks_nb'] = value_leaks
+                    context['methods_source'] = values_methods_source
+                    context['methods_sink'] = values_methods_sink
+
                 template = 'static_analysis/android_binary_analysis.html'
                 if api:
                     return context
@@ -302,12 +369,20 @@ def static_analyzer(request, api=False):
                     context = get_context_from_db_entry(db_entry)
                 else:
                     app_dic['app_file'] = app_dic[
-                        'md5'] + '.zip'  # NEW FILENAME
+                                              'md5'] + '.zip'  # NEW FILENAME
                     app_dic['app_path'] = (app_dic['app_dir']
                                            + app_dic['app_file'])  # APP PATH
                     logger.info('Extracting ZIP')
                     app_dic['files'] = unzip(
                         app_dic['app_path'], app_dic['app_dir'])
+
+                    # sauvegarde_resultats = str(settings.RESULTS_FLOWDROID_PATH) + "" + str(
+                    #     app_dic['md5']) + "-results_FlowDroid.xml "
+                    # commandFlowDroid = "java " + "-jar " + str(settings.JAVA_PATH_FLOWDROID_MAIN) + " -a " + str(
+                    #     app_dic['app_path']) + " -p " + str(settings.ANDROID_PLATEFORM_BINARY) + " -s " + str(
+                    #     settings.SOURCES_AND_SINKS_PATH) + " -o " + sauvegarde_resultats
+                    # os.system(commandFlowDroid)
+
                     # Check if Valid Directory Structure and get ZIP Type
                     pro_type, valid = valid_android_zip(app_dic['app_dir'])
                     if valid and pro_type == 'ios':
@@ -350,9 +425,9 @@ def static_analyzer(request, api=False):
 
                         # Set manifest view link
                         app_dic['mani'] = (
-                            '../ManifestView/?md5='
-                            + app_dic['md5'] + '&type='
-                            + pro_type + '&bin=0'
+                                '../ManifestView/?md5='
+                                + app_dic['md5'] + '&type='
+                                + pro_type + '&bin=0'
                         )
 
                         man_data_dic = manifest_data(app_dic['persed_xml'])

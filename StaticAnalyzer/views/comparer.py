@@ -66,7 +66,7 @@ def diff_apkid(context: dict) -> None:
 
 
 # suppose to get any 2 apps (android / ios / appx)
-# and then figure out what to do with them
+# and then figure Results what to do with them
 def generic_compare(request,
                     first_hash: str,
                     second_hash: str,

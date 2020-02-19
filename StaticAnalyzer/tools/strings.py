@@ -10,7 +10,7 @@ Taken from: http://stackoverflow.com/a/17197027
 
 
 def strings_util(filename, minimum=6):
-    """Print out all connected series of readable chars longer than minimum."""
+    """Print Results all connected series of readable chars longer than minimum."""
     with io.open(filename, mode='rb') as f:
         result = ''
         for c in f.read().decode('utf-8', 'ignore'):

@@ -119,7 +119,7 @@ def live_api(request):
             return invalid_params()
         if stream:
             apk_dir = os.path.join(settings.UPLD_DIR, apphash + '/')
-            apimon_file = os.path.join(apk_dir, 'mobsf_api_monitor.txt')
+            apimon_file = os.path.join(apk_dir, 'x_logcat.txt')
             data = {}
             if is_file_exists(apimon_file):
                 with open(apimon_file, 'r') as flip:
@@ -214,8 +214,9 @@ def apimon_analysis(app_dir):
     """API Analysis."""
     api_details = {}
     try:
-        location = os.path.join(app_dir, 'mobsf_api_monitor.txt')
+        location = os.path.join(app_dir, 'logcat.txt')
         if not is_file_exists(location):
+            print("[INFO] No file apimonitor")
             return {}
         logger.info('Frida API Monitor Analysis')
         with open(location, 'r') as flip:

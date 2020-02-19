@@ -50,7 +50,9 @@ def dynamic_analysis(request):
                    'proxy_ip': proxy_ip,
                    'proxy_port': settings.PROXY_PORT,
                    'title': 'MobSF Dynamic Analysis',
-                   'version': settings.MOBSF_VER}
+                   'version': settings.MOBSF_VER,
+                   'appcrawler': settings.APPCRAWLER_ENABLED,
+                   'monkey': settings.MONKEY_ENABLED}
         template = 'dynamic_analysis/dynamic_analysis.html'
         return render(request, template, context)
     except Exception as exp:
@@ -86,12 +88,12 @@ def dynamic_analyzer(request):
             msg = 'Cannot Connect to ' + identifier
             return print_n_send_error_response(request, msg)
         version = env.get_android_version()
-        logger.info('Android Version identified as %s', version)
+        print('Android Version identified as %s', version)
         xposed_first_run = False
         if not env.is_mobsfyied(version):
             msg = ('This Android instance is not MobSfyed.\n'
                    'MobSFying the android runtime environment')
-            logger.warning(msg)
+            print(msg)
             if not env.mobsfy_init():
                 return print_n_send_error_response(
                     request,
@@ -118,19 +120,21 @@ def dynamic_analyzer(request):
         env.start_clipmon()
         # Get Screen Resolution
         screen_width, screen_height = env.get_screen_res()
-        logger.info('Installing APK')
+        print('Installing APK')
         app_dir = os.path.join(settings.UPLD_DIR,
                                bin_hash + '/')  # APP DIRECTORY
         apk_path = app_dir + bin_hash + '.apk'  # APP PATH
         env.adb_command(['install', '-r', apk_path], False, True)
-        logger.info('Testing Environment is Ready!')
+        print('Testing Environment is Ready!')
         context = {'screen_witdth': screen_width,
                    'screen_height': screen_height,
                    'package': package,
                    'md5': bin_hash,
                    'android_version': version,
                    'version': settings.MOBSF_VER,
-                   'title': 'Dynamic Analyzer'}
+                   'title': 'Dynamic Analyzer',
+                   'appcrawler': settings.APPCRAWLER_ENABLED,
+                   'monkey': settings.MONKEY_ENABLED}
         template = 'dynamic_analysis/android/dynamic_analyzer.html'
         return render(request, template, context)
     except Exception:

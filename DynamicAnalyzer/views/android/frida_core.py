@@ -92,12 +92,12 @@ class Frida:
                 self.write_log(self.api_mon, msg.replace(api_mon, ''))
             elif msg.startswith(aux):
                 self.write_log(self.frida_log,
-                               msg.replace(aux, '[*] ') + '\n')
+                               msg.replace(aux, '[*]') + '\n')
             else:
-                logger.debug('[Frida] %s', msg)
+                print('[Frida] %s', msg)
                 self.write_log(self.frida_log, msg + '\n')
         else:
-            logger.error('[Frida] %s', message)
+            print('[Frida] %s', message)
 
     def connect(self):
         """Connect to Frida Server."""
@@ -107,11 +107,21 @@ class Frida:
             self.clean_up()
             env.run_frida_server()
             device = frida.get_device(get_device(), settings.FRIDA_TIMEOUT)
+            print("[INFO] before device.spawn")
+            print("device :")
+            print(device)
+            print(type(self.package))
             pid = device.spawn([self.package])
+            print("[INFO] after run device.spawn")
+            print("[INFO] before device.resume")
             device.resume(pid)
-            logger.info('Spawning %s', self.package)
+            print("[INFO] after run device.resume")
+
+            print('Spawning %s', self.package)
             time.sleep(2)
+            print("[INFO] before device.attach")
             session = device.attach(pid)
+            print("[INFO] after run device.attach")
         except frida.ServerNotRunningError:
             logger.warning('Frida server is not running')
             self.connect()

@@ -247,32 +247,32 @@ div.loading{
           </div>
           <!-- /.col -->
           {% endif %}
-          <div class="col-md-12">
-            <div class="card bg-gradient-primary">
-              <!-- /.card-header -->
-              <div class="card-body">
-                  <div class="row">
-                     <div class="col-md-9">
-                        <h5>MobSF Dynamic Analysis supports Genymotion Android x86 VMs version 4.1 to 9.0. <br/>We recommend using Android 7.0 and above.</h5>
-                        <p>For Android versions less than <strong>5</strong>, we use Xposed Framework and therefore, you must MobSFy the Android Runtime prior to Dynamic Analysis.<br /> Other versions use Frida and are automatically MobSFyed on the go.</p>
-                        <p><h5> HTTPS Traffic Interception</h5>
-                        <p>For Android version <strong>4.1 - 4.3</strong>, set Android VM proxy as <strong>{% if proxy_ip %} {{ proxy_ip }}{% else %} <i>&lt;Host IP&gt;</i>{% endif %}:{{proxy_port}}</strong><br/ >For Android versions <strong>4.4 - 9</strong>, global proxy settings are automatically applied. For more information, please refer Documentation.
-                        </p>
-                      </div>   
-                     <div class="col-md-3">
-                     <br/>
-                     <br/>
-                     <br/>
-                     <p>
-                        <button class="btn btn-info" role="button"  data-toggle="modal" data-target="#mmobsfy">MobSFy Android Runtime</button> <p>Android instance: <strong>{{ identifier }}</strong></p></div>
-                      </p>
-                    </div>
-                     </div>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-          </div>
+<!--          <div class="col-md-12">-->
+<!--            <div class="card bg-gradient-primary">-->
+<!--              &lt;!&ndash; /.card-header &ndash;&gt;-->
+<!--              <div class="card-body">-->
+<!--                  <div class="row">-->
+<!--                     <div class="col-md-9">-->
+<!--                        <h5>MobSF Dynamic Analysis supports Genymotion Android x86 VMs version 4.1 to 9.0. <br/>We recommend using Android 7.0 and above.</h5>-->
+<!--                        <p>For Android versions less than <strong>5</strong>, we use Xposed Framework and therefore, you must MobSFy the Android Runtime prior to Dynamic Analysis.<br /> Other versions use Frida and are automatically MobSFyed on the go.</p>-->
+<!--                        <p><h5> HTTPS Traffic Interception</h5>-->
+<!--                        <p>For Android version <strong>4.1 - 4.3</strong>, set Android VM proxy as <strong>{% if proxy_ip %} {{ proxy_ip }}{% else %} <i>&lt;Host IP&gt;</i>{% endif %}:{{proxy_port}}</strong><br/ >For Android versions <strong>4.4 - 9</strong>, global proxy settings are automatically applied. For more information, please refer Documentation.-->
+<!--                        </p>-->
+<!--                      </div>   -->
+<!--                     <div class="col-md-3">-->
+<!--                     <br/>-->
+<!--                     <br/>-->
+<!--                     <br/>-->
+<!--                     <p>-->
+<!--                        <button class="btn btn-info" role="button"  data-toggle="modal" data-target="#mmobsfy">MobSFy Android Runtime</button> <p>Android instance: <strong>{{ identifier }}</strong></p></div>-->
+<!--                      </p>-->
+<!--                    </div>-->
+<!--                     </div>-->
+<!--              </div>-->
+<!--              &lt;!&ndash; /.card-body &ndash;&gt;-->
+<!--            </div>-->
+<!--            &lt;!&ndash; /.card &ndash;&gt;-->
+<!--          </div>-->
           <!-- /.col -->
         
           <div class="col-md-12">
