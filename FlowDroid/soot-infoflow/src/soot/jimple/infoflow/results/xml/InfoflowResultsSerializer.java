@@ -144,7 +144,7 @@ public class InfoflowResultsSerializer {
     }
 
     /**
-     * Writes out the given data flow performance data into the given XML stream
+     * Writes out the leaks number into the given XML stream
      * writer
      *
      * @param resCountLeaks The performance data to write out

@@ -80,6 +80,7 @@ def instrument(request):
         default_hooks = request.POST['default_hooks']
         auxiliary_hooks = request.POST['auxiliary_hooks']
         code = request.POST['frida_code']
+        port = request.POST['port']
         # Fill extras
         extras = {}
         class_name = request.POST.get('cls_name')
@@ -101,7 +102,7 @@ def instrument(request):
                           auxiliary_hooks.split(','),
                           extras,
                           code)
-        trd = threading.Thread(target=frida_obj.connect)
+        trd = threading.Thread(target=frida_obj.connect(port))
         trd.daemon = True
         trd.start()
         data = {'status': 'ok'}
@@ -119,13 +120,14 @@ def live_api(request):
             return invalid_params()
         if stream:
             apk_dir = os.path.join(settings.UPLD_DIR, apphash + '/')
-            apimon_file = os.path.join(apk_dir, 'x_logcat.txt')
+            apimon_file = os.path.join(apk_dir, 'mobsf_api_monitor.txt')
             data = {}
             if is_file_exists(apimon_file):
                 with open(apimon_file, 'r') as flip:
                     api_list = json.loads('[{}]'.format(
                         flip.read()[:-1]))
                 data = {'data': api_list}
+                print(data)
                 return json_response(data)
         logger.info('Starting API monitor streaming')
         template = 'dynamic_analysis/android/live_api.html'
@@ -214,7 +216,7 @@ def apimon_analysis(app_dir):
     """API Analysis."""
     api_details = {}
     try:
-        location = os.path.join(app_dir, 'logcat.txt')
+        location = os.path.join(app_dir, 'mobsf_api_monitor.txt')
         if not is_file_exists(location):
             print("[INFO] No file apimonitor")
             return {}

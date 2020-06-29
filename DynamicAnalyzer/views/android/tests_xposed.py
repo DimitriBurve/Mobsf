@@ -8,7 +8,7 @@ import re
 
 from DynamicAnalyzer.views.android.environment import Environment
 
-from MobSF.utils import (is_base64, is_file_exists, python_list)
+from MobSF.utils import (is_base64, is_file_exists, python_list, get_device)
 
 logger = logging.getLogger(__name__)
 
@@ -127,8 +127,8 @@ def droidmon_api_analysis(app_dir, package):
             _, value = line.split(res_id, 1)
             try:
                 apis = json.loads(value, strict=False)
-                print("[INFO] Droidmon APIS")
-                print(apis)
+                # print("[INFO] Droidmon APIS")
+                # print(apis)
                 call_data = {}
                 call_data['class'] = apis['class']
                 call_data['method'] = apis['method']
@@ -177,12 +177,16 @@ def base64_decode(args):
     return decoded
 
 
-def download_xposed_log(apk_dir):
+def download_xposed_log(apk_dir, port):
     """Download Xposed Output."""
-    env = Environment()
+    identifier = get_device(port)
+    env = Environment(identifier, port)
     xposed_out = ('/data/data/'
                   'de.robv.android.xposed.installer'
                   '/log/error.log')
+    # xposed_out = ('/data/user_de/0/'
+    #               'de.robv.android.xposed.installer'
+    #               '/log/error.log')
     env.adb_command(['pull',
                      xposed_out,
                      apk_dir + 'x_logcat.txt'])

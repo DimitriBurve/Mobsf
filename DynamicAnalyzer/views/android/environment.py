@@ -30,11 +30,14 @@ logger = logging.getLogger(__name__)
 
 class Environment:
 
-    def __init__(self, identifier=None):
-        if identifier:
-            self.identifier = identifier
+    def __init__(self, identifier=None, name=None):
+        if name:
+            self.name = name
         else:
-            self.identifier = get_device()
+            self.name = "Google Pixel 3_DUP"
+
+        self.identifier = identifier
+
         self.tools_dir = settings.TOOLS_DIR
 
     def wait(self, sec):
@@ -55,18 +58,31 @@ class Environment:
         self.wait(2)
         return self.check_connect_error(out)
 
+    def avd_reference_name(self):
+        if self.name == settings.NAME_GENY_0_DUP:
+            return [settings.NAME_GENY_0, settings.NAME_GENY_0_DUP]
+        elif self.name == settings.NAME_GENY_1_DUP:
+            return [settings.NAME_GENY_1, settings.NAME_GENY_1_DUP]
+        elif self.name == settings.NAME_GENY_2_DUP:
+            return [settings.NAME_GENY_2, settings.NAME_GENY_2_DUP]
+        elif self.name == settings.NAME_GENY_3_DUP:
+            return [settings.NAME_GENY_3, settings.NAME_GENY_3_DUP]
+        elif self.name == settings.NAME_GENY_4_DUP:
+            return [settings.NAME_GENY_4, settings.NAME_GENY_4_DUP]
+
     def connect_n_mount(self):
         """Test ADB Connection."""
         # self.adb_command(['kill-server'])
         # self.adb_command(['start-server'])
         logger.info('ADB Restarted')
         self.wait(2)
-        logger.info('Connecting to Android %s', self.identifier)
+        logger.info('Connecting to Android %s', self.name)
         toolsdir = os.path.join(
             settings.BASE_DIR, 'DynamicAnalyzer/tools/')  # TOOLS DIR
         adb = "adb"
-        self.refresh_avd(adb, settings.AVD_PATH, settings.AVD_REFERENCE_NAME, settings.AVD_DUP_NAME,
-                         settings.AVD_EMULATOR)
+        names = self.avd_reference_name()
+        self.refresh_avd(adb, settings.AVD_PATH, names[0], names[1],
+                         settings.AVD_EMULATOR, self.name)
         # if not self.run_subprocess_verify_output([get_adb(),
         #                                          'connect',
         #                                           self.identifier]):
@@ -96,11 +112,14 @@ class Environment:
             args += ['shell']
         args += cmd_list
 
+        print("[DEBUG] args adb command : " + str(args))
+
         try:
             result = subprocess.check_output(args)
             return result
-        except Exception:
+        except Exception as e:
             if not silent:
+                print(e)
                 logger.exception('Error Running ADB Command')
             return None
 
@@ -260,7 +279,7 @@ class Environment:
                          True)
         self.adb_command(['pull',
                           '/data/local/stream.png',
-                          '{}screen.png'.format(settings.SCREEN_DIR)])
+                          '{}screen{}.png'.format(settings.SCREEN_DIR, self.name)])
 
     def android_component(self, bin_hash, comp):
         """Get APK Components."""
@@ -320,7 +339,7 @@ class Environment:
             agent_str = b'MobSF-Frida'
         try:
             out = subprocess.check_output(
-                [get_adb(),
+                ["adb",
                  '-s', self.identifier,
                  'shell',
                  'cat',
@@ -409,16 +428,16 @@ class Environment:
         bluepill = os.path.join(self.tools_dir,
                                 xposed_modules,
                                 'AndroidBluePill.apk')
-        # logger.info('Installing JustTrustMe')
-        # self.adb_command(['install', '-r', justrustme])
+        logger.info('Installing JustTrustMe')
+        self.adb_command(['install', '-r', justrustme])
         logger.info('Installing SSLUnpinning')
         self.adb_command(['install', '-r', sslunpin])
         logger.info('Installing ProxyOn')
         self.adb_command(['install', '-r', proxyon])
-        # logger.info('Installing RootCloak')
-        # self.adb_command(['install', '-r', rootcloak])
-        # logger.info('Installing Android BluePill')
-        # self.adb_command(['install', '-r', bluepill])
+        logger.info('Installing RootCloak')
+        self.adb_command(['install', '-r', rootcloak])
+        logger.info('Installing Android BluePill')
+        self.adb_command(['install', '-r', bluepill])
         logger.info('Launching Xposed Framework.')
         xposed_installer = ('de.robv.android.xposed.installer/'
                             'de.robv.android.xposed.installer.'
@@ -431,7 +450,7 @@ class Environment:
         frida_dir = 'onDevice/frida/'
         frida_bin = os.path.join(self.tools_dir,
                                  frida_dir,
-                                 'frida-server-12.8.10-android-x86')
+                                 'frida-server-12.8.14-android-x86')
         arch = self.get_android_arch()
         print('Android instance architecture identified as %s', arch)
         if 'x86' not in arch:
@@ -442,9 +461,11 @@ class Environment:
         self.adb_command(['push', frida_bin, '/system/fd_server'])
         self.adb_command(['chmod', '755', '/system/fd_server'], True)
 
-    def run_frida_server(self):
+    def run_frida_server(self, name):
+        self.identifier = get_device(name)
         """Start Frida Server."""
         check = self.adb_command(['ps'], True)
+        print(str(check))
         if b'fd_server' in check:
             logger.info('Frida Server is already running')
             return
@@ -471,20 +492,28 @@ class Environment:
         """Start AVD"""
         print("\n[INFO] Starting MobSF Emulator")
         try:
+            # args = [
+            #     emulator,
+            #     '-avd',
+            #     avd_name,
+            #     "-no-boot-anim",
+            #     "-writable-system",
+            #     # "-no-window",
+            #     "-no-snapshot-save",
+            #     # "-netspeed",
+            #     # "full",
+            #     # "-netdelay",
+            #     # "none",
+            #     "-port",
+            #     str(emulator_port),
+            # ]
+
             args = [
-                emulator,
-                '-avd',
-                avd_name,
-                "-no-boot-anim",
-                "-writable-system",
-                # "-no-window",
-                "-no-snapshot-save",
-                # "-netspeed",
-                # "full",
-                # "-netdelay",
-                # "none",
-                "-port",
-                str(emulator_port),
+                settings.PATH_GMTOOL,
+                "admin",
+                "start",
+                avd_name
+                # "Google Pixel 3"
             ]
 
             print("TOTO")
@@ -496,138 +525,224 @@ class Environment:
                     del os.environ['DYLD_FALLBACK_LIBRARY_PATH']
 
             subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
             print("TOTO2")
-            time.sleep(8)
-            # args = ["adb",
-            #         "wait-for-device"]
+
+            time.sleep(10)
+            self.identifier = get_device(avd_name)
+            print(str(self.identifier))
+            if not self.identifier:
+                time.sleep(10)
+                self.identifier = get_device(self.name)
+            time.sleep(5)
+            args = ["adb",
+                    "-s",
+                    self.identifier,
+                    "wait-for-device"]
             # subprocess.call(args)
-            os.system("adb devices")
-            os.system("adb wait-for-device")
-            print("TOTO3")
-            os.system("adb devices")
-            print("TOTO4")
-            subprocess.call(
-                ["adb",
-                 "root"]
-            )
-            print("TOTO5")
-            subprocess.call(
-                ["adb",
-                 "remount"]
-            )
-            print("TOTO6")
-            path_origin = "/media/dburveni/3806ab9d-f0d1-45c7-9d29-fbfb7f35ed85/mobsf/Audit/_PLATFORM_INSTALLATION_/MobSF/supersu/x86/su.pie"
-            path_destination1 = "/system/bin/su"
-            path_destination2 = "/system/xbin/su"
-            subprocess.call(
-                ["adb",
-                 "push",
-                 path_origin,
-                 path_destination1]
-            )
-            print("TOTO7")
-            subprocess.call(
-                ["adb",
-                 "push",
-                 path_origin,
-                 path_destination2]
-            )
-            print("TOTO8")
-            time.sleep(2)
-            print("[INFO] Debut lancement root")
-            os.system("adb shell chmod 06755 /system/bin/su")
-            print("TOTO9")
-            os.system("adb shell chmod 06755 /system/xbin/su")
-            print("TOTO10")
-            os.system("adb shell setenforce 0")
-            print("TOTO11")
-            os.system("adb shell /system/bin/su --install")
-            print("TOTO12")
-            os.system("adb shell /system/bin/su --daemon&")
-            print("TOTO13")
-            os.system("adb shell /system/xbin/su --install")
-            print("TOTO14")
-            os.system("adb shell /system/xbin/su --daemon&")
-            print("TOTO15")
-            # os.system("adb shell /system/fd_server &")
+            # os.system("adb devices")
+            # os.system("adb -s " + self.identifier + " wait-for-device")
+            # print("TOTO3")
+            # os.system("adb devices")
+            # print("TOTO4")
+            # subprocess.call(
+            #     ["adb",
+            #      "-s",
+            #      self.identifier,
+            #      "root"]
+            # )
+            # print("TOTO5")
+            # subprocess.call(
+            #     ["adb",
+            #      "-s",
+            #      self.identifier,
+            #      "remount"]
+            # )
+            # print("TOTO6")
+            # path_origin = "/media/dburveni/3806ab9d-f0d1-45c7-9d29-fbfb7f35ed85/mobsf/Audit/_PLATFORM_INSTALLATION_/MobSF/supersu/x86/su.pie"
+            # path_destination1 = "/system/bin/su"
+            # path_destination2 = "/system/xbin/su"
+            # subprocess.call(
+            #     ["adb",
+            #      "-s",
+            #      self.identifier,
+            #      "push",
+            #      path_origin,
+            #      path_destination1]
+            # )
+            # print("TOTO7")
+            # subprocess.call(
+            #     ["adb",
+            #      "-s",
+            #      self.identifier,
+            #      "push",
+            #      path_origin,
+            #      path_destination2]
+            # )
+            # print("TOTO8")
+            # time.sleep(2)
+            # print("[INFO] Debut lancement root")
+            # subprocess.call(
+            #     ["adb",
+            #      "-s",
+            #      self.identifier,
+            #      "shell",
+            #      "chmod 06755 /system/bin/su"]
+            # )
+            # print("TOTO9")
+            # subprocess.call(
+            #     ["adb",
+            #      "-s",
+            #      self.identifier,
+            #      "shell",
+            #      "chmod 06755 /system/xbin/su"]
+            # )
+            # print("TOTO10")
+            # subprocess.call(
+            #     ["adb",
+            #      "-s",
+            #      self.identifier,
+            #      "shell",
+            #      "setenforce 0"]
+            # )
+            # print("TOTO11")
+            # subprocess.call(
+            #     ["adb",
+            #      "-s",
+            #      self.identifier,
+            #      "shell",
+            #      "/system/bin/su --install"]
+            # )
+            # print("TOTO12")
+            # subprocess.call(
+            #     ["adb",
+            #      "-s",
+            #      self.identifier,
+            #      "shell",
+            #      "/system/bin/su --daemon&"]
+            # )
+            # print("TOTO13")
+            # subprocess.call(
+            #     ["adb",
+            #      "-s",
+            #      self.identifier,
+            #      "shell",
+            #      "/system/xbin/su --install"]
+            # )
+            # print("TOTO14")
+            # subprocess.call(
+            #     ["adb",
+            #      "-s",
+            #      self.identifier,
+            #      "shell",
+            #      "/system/xbin/su --daemon&"]
+            # )
+            # print("TOTO15")
+            # os.system("adb -s " + self.identifier + " shell am start eu.chainfire.supersu/.MainActivity")
             # print("TOTO16")
+            # os.system("adb -s " + self.identifier + " shell input keyevent KEYCODE_HOME")
+            # os.system("adb shell /system/fd_server &")
 
         except:
             PrintException("[ERROR] Starting MobSF Emulator")
 
-    def stop_avd(self, adb):
+    def stop_avd(self, name):
         """Stop AVD"""
         print("\n[INFO] Stopping MobSF Emulator")
         try:
             # adb -s emulator-xxxx emu kill
             FNULL = open(os.devnull, 'w')
-            args = [adb, '-s', self.identifier, 'emu', 'kill']
+            # args = [adb, '-s', self.identifier, 'emu', 'kill']
+            args = [settings.PATH_GMTOOL,
+                    "admin",
+                    "stop",
+                    name
+                    # "Google Pixel 3"
+                    ]
             subprocess.call(args, stderr=FNULL)
             # os.system("adb emu kill")
         except:
             PrintException("[ERROR] Stopping MobSF Emulator")
 
-    def delete_avd(self, avd_path, avd_name):
+    def delete_avd(self, avd_name):
         """Delete AVD"""
         print("\n[INFO] Deleting emulator files")
         try:
-            config_file = os.path.join(avd_path, avd_name + '.ini')
-            if os.path.exists(config_file):
-                os.remove(config_file)
-            '''
-            # todo: Sometimes there is an error here because of the locks that avd
-            # does - check this out
-            '''
-            avd_folder = os.path.join(avd_path, avd_name + '.avd')
-            if os.path.isdir(avd_folder):
-                shutil.rmtree(avd_folder)
+            # config_file = os.path.join(avd_path, avd_name + '.ini')
+            # if os.path.exists(config_file):
+            #     os.remove(config_file)
+            # '''
+            # # todo: Sometimes there is an error here because of the locks that avd
+            # # does - check this out
+            # '''
+            # avd_folder = os.path.join(avd_path, avd_name + '.avd')
+            # if os.path.isdir(avd_folder):
+            #     shutil.rmtree(avd_folder)
+            FNULL = open(os.devnull, 'w')
+            # args = [adb, '-s', self.identifier, 'emu', 'kill']
+            args = [settings.PATH_GMTOOL,
+                    "admin",
+                    "delete",
+                    avd_name,
+                    ]
+            subprocess.call(args, stderr=FNULL)
         except:
             PrintException("[ERROR] Deleting emulator files")
 
-    def duplicate_avd(self, avd_path, reference_name, dup_name):
+    def duplicate_avd(self, reference_name, dup_name):
         """Duplicate AVD"""
         print("\n[INFO] Duplicating MobSF Emulator")
         try:
-            reference_ini = os.path.join(avd_path, reference_name + '.ini')
-            dup_ini = os.path.join(avd_path, dup_name + '.ini')
-            reference_avd = os.path.join(avd_path, reference_name + '.avd')
-            dup_avd = os.path.join(avd_path, dup_name + '.avd')
-
-            # Copy the files from the referenve avd to the one-time analysis avd
-            shutil.copyfile(reference_ini, dup_ini)
-            shutil.copytree(reference_avd, dup_avd)
-
-            # Replacing every occuration of the reference avd name to the dup one
-            for path_to_update in [dup_ini,
-                                   os.path.join(dup_avd, 'hardware-qemu.ini'),
-                                   os.path.join(dup_avd, 'config.ini')
-                                   ]:
-                with io.open(path_to_update, mode='r', encoding="utf8", errors="ignore") as fled:
-                    replaced_file = fled.read()
-                    replaced_file = replaced_file.replace(reference_name, dup_name)
-                with io.open(path_to_update, 'w') as fled:
-                    fled.write(replaced_file)
+            # reference_ini = os.path.join(avd_path, reference_name + '.ini')
+            # dup_ini = os.path.join(avd_path, dup_name + '.ini')
+            # reference_avd = os.path.join(avd_path, reference_name + '.avd')
+            # dup_avd = os.path.join(avd_path, dup_name + '.avd')
+            #
+            # # Copy the files from the referenve avd to the one-time analysis avd
+            # shutil.copyfile(reference_ini, dup_ini)
+            # shutil.copytree(reference_avd, dup_avd)
+            #
+            # # Replacing every occuration of the reference avd name to the dup one
+            # for path_to_update in [dup_ini,
+            #                        os.path.join(dup_avd, 'hardware-qemu.ini'),
+            #                        os.path.join(dup_avd, 'config.ini')
+            #                        ]:
+            #     with io.open(path_to_update, mode='r', encoding="utf8", errors="ignore") as fled:
+            #         replaced_file = fled.read()
+            #         replaced_file = replaced_file.replace(reference_name, dup_name)
+            #     with io.open(path_to_update, 'w') as fled:
+            #         fled.write(replaced_file)
+            FNULL = open(os.devnull, 'w')
+            # args = [adb, '-s', self.identifier, 'emu', 'kill']
+            args = [settings.PATH_GMTOOL,
+                    "admin",
+                    "clone",
+                    reference_name,
+                    dup_name,
+                    "sdk_path=/usr/lib/android-sdk/"
+                    ]
+            subprocess.call(args, stderr=FNULL)
         except:
             PrintException("[ERROR] Duplicating MobSF Emulator")
 
-    def refresh_avd(self, adb, avd_path, reference_name, dup_name, emulator):
+    def refresh_avd(self, adb, avd_path, reference_name, dup_name, emulator, port):
         """Refresh AVD"""
         print("\n[INFO] Refreshing MobSF Emulator")
         try:
             # Stop existing emulator on the spesified port
-            self.stop_avd(adb)
+            self.stop_avd(dup_name)
 
             # Windows has annoying lock system, it takes time for it to remove the locks after we stopped the emulator
             if platform.system() == 'Windows':
                 time.sleep(3)
 
             # Delete old emulator
-            self.delete_avd(avd_path, dup_name)
+            self.delete_avd(dup_name)
 
             # Copy and replace the contents of the reference machine
-            self.duplicate_avd(avd_path, reference_name, dup_name)
+            self.duplicate_avd(reference_name, dup_name)
 
             # Start emulator
-            self.start_avd(emulator, dup_name, settings.AVD_ADB_PORT)
+            self.start_avd(emulator, dup_name, port)
         except:
             PrintException("[ERROR] Refreshing MobSF VM")

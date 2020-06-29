@@ -1,0 +1,118 @@
+##########################################################################################################
+#Fichier Créé par Dimitri BURVENIQUE APA
+#
+#Instructions pour le root de l'AVD et de l'installation des applications nécessaires pour l'audit
+#dynamique des applications.
+#
+#À partir des travaux du CEN LEMMET Pierre
+##########################################################################################################
+##
+
+pip3 install django
+
+##########################################################################################################
+#Au premier lancement ou redémarrage de l'avd (après augmentation de l'espace disque par exemple), instructions :
+##########################################################################################################
+##
+##########################################################################################################
+----------------------------------------------------------------------------------------------------------
+
+#Pour root :
+__________________________________________________________________________________________________________
+
+./emulator -avd nom_emulateur -writable-system &
+adb root
+adb remount
+adb push /path/location/mobsf/Audit/_PLATFORM_INSTALLATION_/Mobsf/supersu/x86/su.pie /system/bin/su
+adb push /path/location/mobsf/Audit/_PLATFORM_INSTALLATION_/Mobsf/supersu/x86/su.pie /system/xbin/su
+adb shell chmod 06755 /system/bin/su
+adb shell chmod 06755 /system/xbin/su
+adb shell setenforce 0
+adb shell /system/bin/su --install
+adb shell /system/bin/su --daemon&
+adb shell /system/xbin/su --install
+adb shell /system/xbin/su --daemon&
+__________________________________________________________________________________________________________
+
+
+----------------------------------------------------------------------------------------------------------
+
+#Verifier root :
+__________________________________________________________________________________________________________
+
+adb install -r supersu-2-82.apk 
+#Lancer supersu, !!!! ne pas mettre à jour le binaire !!!!, activer la version pro si possible, mettre les permissions par défaut sur grant dans les paramètres, autoriser tous les utilisateurs à être root
+
+adb install -r jackpal.androidterm-1.0.70-71-minAPI4.apk
+#Tester la commande "su" dans le terminal pour tester si le root a fonctionné
+__________________________________________________________________________________________________________
+
+
+----------------------------------------------------------------------------------------------------------
+
+#Option :
+__________________________________________________________________________________________________________
+
+#adb install -r File_Manager-2.0.0.397_180123.apk
+#Si besoin d'un file_manager
+__________________________________________________________________________________________________________
+
+
+----------------------------------------------------------------------------------------------------------
+
+#Installation des applications pour l'Audit :
+__________________________________________________________________________________________________________
+#PATH : path/location/mobsf/Audit/_PLATEFORM_INSTALLATION_/App_root/
+
+#Installer Xposed
+adb install -r XposedInstaller_3.1.5.apk
+#Ouvrir Xposed, telecharger les framework sur le bouton "install" puis installer les si après le téléchargement toujours pas installé
+
+#Éteindre l'avd puis relancer en mode root pour activer si pas de proposition de reboot sinon aller à la ligne 82.
+./emulator -avd nom_emulateur -writable-system &
+adb root
+adb remount
+adb shell setenforce 0
+adb shell /system/bin/su --install
+adb shell /system/bin/su --daemon&
+adb shell /system/xbin/su --install
+adb shell /system/xbin/su --daemon&
+#Root activé avec l'icone de supersu dans la barre de notification. Sinon refaire la première étape pour être sûr.
+
+#Aller dans l'application Xposed et vérifier que les frameworks sont bien installé et utilisés/activés.
+##
+#Installer AndroidBluePill
+adb install -r AndroidBluePill.apk
+
+#Installer ClipDump
+adb install -r ClipDump.apk
+
+#Installer DataPusher
+adb install -r DataPusher.apk
+
+#Installer Droidmon
+adb install -r Droidmon.apk
+
+#Installer JustTrustMe.apk
+adb install -r JustTrustMe.apk
+
+#Installer RootCloak
+adb install -r RootCloak.apk
+
+#Installer ScreenCast
+adb install -r ScreenCast.apk
+
+#Installer IMEI Change
+adb install -r com.vivek.imeichanger.apk
+
+#Aller dans l'application Xposed, aller dans la rubrique Modules (situé dans le menu), cocher toutes les cases pour les applis.
+##
+#Ajouter le fichier hooks.json pour Droidmon
+adb push hooks.json /data/local/tmp/
+__________________________________________________________________________________________________________
+
+
+#Testez votre appli maintenant
+#Vérifier que l'AVD est bien root au démarrage sinon relancer la page et vérifier si il est bien root cette fois-ci sinon répéter l'opération
+__________________________________________________________________________________________________________
+##########################################################################################################

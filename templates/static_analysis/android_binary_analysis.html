@@ -281,7 +281,15 @@
               </p>
              </a>
             </li>
-            {% endif %}
+                <li class="nav-item">
+              <a href="../android_dynamic/?hash={{md5}}&amp;package={{package_name}}" class="nav-link">
+              <i class="nav-icon fa fa-play-circle"></i>
+              <p>
+                Restart Dynamic Analysis
+              </p>
+             </a>
+            </li>
+            {% else %}
             <li class="nav-item">
               <a href="../android_dynamic/?hash={{md5}}&amp;package={{package_name}}" class="nav-link">
               <i class="nav-icon fa fa-play-circle"></i>
@@ -290,6 +298,7 @@
               </p>
              </a>
             </li>
+            {% endif %}
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

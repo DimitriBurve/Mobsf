@@ -16,7 +16,7 @@ from DynamicAnalyzer.views.android.environment import Environment
 from DynamicAnalyzer.views.android.tests_xposed import download_xposed_log
 from DynamicAnalyzer.tools.webproxy import stop_httptools
 
-from MobSF.utils import python_list
+from MobSF.utils import python_list, get_device
 
 from StaticAnalyzer.models import StaticAnalyzerAndroid
 
@@ -30,7 +30,10 @@ def activity_tester(request):
     """Exported & non exported activity Tester."""
     data = {}
     try:
-        env = Environment()
+        port = request.POST['port']
+        identifier = get_device(port)
+        env = Environment(identifier, port)
+        # env = Environment()
         test = request.POST['test']
         md5_hash = request.POST['hash']
         package = request.POST['package']
@@ -96,7 +99,9 @@ def download_data(request):
     logger.info('Downloading app data')
     data = {}
     try:
-        env = Environment()
+        port = request.POST['port']
+        identifier = get_device(port)
+        env = Environment(identifier, port)
         package = request.POST['package']
         md5_hash = request.POST['hash']
         if is_attack_pattern(package) or not is_md5(md5_hash):
@@ -110,8 +115,8 @@ def download_data(request):
         logger.info('Downloading Archive')
         env.adb_command(['pull', files_loc + package + '.tar',
                          apk_dir + package + '.tar'])
-        logger.info('Stopping ADB server')
-        env.adb_command(['kill-server'])
+        # logger.info('Stopping ADB server')
+        # env.adb_command(['kill-server'])
         data = {'status': 'ok'}
     except Exception as exp:
         logger.exception('Downloading application data')
@@ -127,7 +132,9 @@ def collect_logs(request):
     logger.info('Collecting Data and Cleaning Up')
     data = {}
     try:
-        env = Environment()
+        port = request.POST['port']
+        identifier = get_device(port)
+        env = Environment(identifier, port)
         md5_hash = request.POST['hash']
         package = request.POST['package']
         if (not strict_package_check(package)
@@ -147,7 +154,8 @@ def collect_logs(request):
         dumpsys = env.adb_command(['dumpsys'], True)
         with open(dout, 'wb') as flip:
             flip.write(dumpsys)
-        download_xposed_log(apk_dir)
+        if env.get_android_version() < 7:
+            download_xposed_log(apk_dir, port)
         env.adb_command(['am', 'force-stop', package], True)
         logger.info('Stopping app')
         # Unset Global Proxy

@@ -419,13 +419,13 @@ def find_process_by(name):
     proc = set()
     for p in psutil.process_iter(attrs=['name', 'exe', 'cmdline']):
         if (name == p.info['name'] or p.info['exe']
-            and os.path.basename(p.info['exe']) == name
+                and os.path.basename(p.info['exe']) == name
                 or p.info['cmdline'] and p.info['cmdline'][0] == name):
             proc.add(p.info['exe'])
     return proc
 
 
-def get_device():
+def get_device(port):
     # """Get Device."""
     # if os.getenv('ANALYZER_IDENTIFIER'):
     #     return os.getenv('ANALYZER_IDENTIFIER')
@@ -442,12 +442,26 @@ def get_device():
     #              'Please set ANALYZER_IDENTIFIER in MobSF/settings.py')
     """Get Device Type"""
     try:
-        if settings.ANALYZER_IDENTIFIER == "MobSF_REAL_DEVICE":
+        if settings.ANALYZER_IDENTIFIER_0 == "MobSF_REAL_DEVICE":
             return settings.DEVICE_IP + ":" + str(settings.DEVICE_ADB_PORT)
-        elif settings.ANALYZER_IDENTIFIER == "New_Device_API_23_DUP":
-            return 'emulator-' + str(settings.AVD_ADB_PORT)
+        elif settings.ANALYZER_IDENTIFIER_0 == "New_Device_API_272":
+            return 'emulator-' + str(port)
         else:
-            return settings.VM_IP + ":" + str(settings.VM_ADB_PORT)
+            cmd = settings.PATH_GENYSHELL + " -c \"devices show\" | grep On | grep '" + port + "$'"
+            print("[DEBUG] in else of get_device")
+            print("[DEBUG] cmd check avd name : " + str(cmd))
+            # result_cmd = subprocess.run(args, stdout=subprocess.PIPE).stdout.decode('utf-8')
+            result_cmd = os.popen(cmd).read()
+            print("[DEBUG] res_cm dev show grep true : " + str(result_cmd))
+            if result_cmd != "":
+                result_cmd_split = result_cmd.split("\n")
+                print("[DEBUG] len result_cmd_split : " + str(len(result_cmd_split)))
+                if len(result_cmd_split) > 1:
+                    for item in result_cmd_split[:len(result_cmd_split) - 1]:
+                        tab_temp = item.split("|")
+                        ip_device = tab_temp[4].strip()
+                        return ip_device
+            # return settings.VM_IP + ":" + str(settings.VM_ADB_PORT)
     except:
         PrintException(
             "[ERROR] Getting ADB Connection Identifier for Device/VM")
@@ -519,6 +533,7 @@ def get_adb():
                            ' is running before performing Dynamic Analyis.')
     return 'adb'
 
+
 def PrintException(msg, web=False):
     try:
         LOGPATH = settings.LOG_DIR
@@ -535,8 +550,8 @@ def PrintException(msg, web=False):
     ts = time.time()
     st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
     dat = '\n[' + st + ']\n' + msg + \
-        ' ({0}, LINE {1} "{2}"): {3}'.format(
-            filename, lineno, line.strip(), exc_obj)
+          ' ({0}, LINE {1} "{2}"): {3}'.format(
+              filename, lineno, line.strip(), exc_obj)
     if platform.system() == "Windows":
         print(dat)
     else:

@@ -53,7 +53,7 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div id="mobsf_header">
-            <h2><strong>Dynamic Analyzer </strong>- {{ package }}</h2>
+            <h2><strong>Dynamic Analyzer </strong>- {{ package }} on {{ port }}</h2>
           <input type="hidden" id="screen_width" value="{{ screen_witdth }}">
           <input type="hidden" id="screen_height" value="{{ screen_height }}">
         </div>
@@ -460,7 +460,7 @@ var Terminal = Terminal || function (cmdLineContainer, outputContainer) {
         );
     }
     function get_comp(comp){
-      action('../get_component/', { component: comp, hash: '{{ md5 }}'}, function(json) {
+      action('../get_component/', { component: comp, hash: '{{ md5 }}', port: '{{ port }}'}, function(json) {
           if (json.status==="ok")
             output(json.message, true, true);
           else
@@ -469,7 +469,7 @@ var Terminal = Terminal || function (cmdLineContainer, outputContainer) {
     }
 
     function execute_adb(exec_cmd){
-      action('../execute_adb/', { cmd: exec_cmd }, function(json) {
+      action('../execute_adb/', { cmd: exec_cmd, port: '{{ port }}' }, function(json) {
           if (json.status==="ok")
             output(json.message, true, true);
       });
@@ -565,8 +565,8 @@ term.init();
 
 // Start up
 {% if android_version < 5 %}
-  $('#frida_options').hide()
-  $('#codeedit').hide()
+  $('#frida_options').hide();
+  $('#codeedit').hide();
 {% else %}
    load_frida_others();
 {% endif %}
@@ -604,7 +604,7 @@ $('#my').click(function(e) {
         x = x * (width/320);
         y = y * (height/580);
         console.log('X Axis: '+ x + " Y Axis: "+ y);
-        action('../touch_events/', {x: x, y: y}, function(json) {
+        action('../touch_events/', {x: x, y: y, port: '{{ port }}'}, function(json) {
             if (json.status==='ok')
               console.log('Clicked!');
             else
@@ -620,17 +620,19 @@ $("#screen").click(function() {
       var stext = $("#screen").text();
       if (stext === "Show Screen"){
           $("#screen").text("Stop Screen");
-          print_status('Screen streaming started')
+          print_status('Screen streaming started');
           touch = "on";
           screenfunc = setInterval(function(){
               // Capture Screen
-              action('../screen_cast/', {}, function(json) {
-                if (json.status == 'ok')
-                  $('#my').attr('src', '../download/screen/screen.png?'+ new Date().getTime());
-                else
-                  console.log(json.message)
+              action('../screen_cast/', {port: '{{ port }}'}, function(json) {
+                if (json.status === 'ok') {
+                    console.log('changement image');
+                    document.getElementById("my").src = "../download/screen/screen{{ port }}.png?"+ new Date().getTime();
+                }else {
+                    console.log(json.message)
+                }
                });
-          },500);
+          },800);
       } else {
           $("#screen").text("Show Screen");
           print_status("Screen streaming stopped");
@@ -644,7 +646,7 @@ $("#screen").click(function() {
 //Screenshot
 $("#ss").click(function() {
   print_status("Taking a screenshot");
-  action('../screenshot/', {hash: '{{ md5 }}'}, function(json) {
+  action('../screenshot/', {hash: '{{ md5 }}', port: '{{ port }}'}, function(json) {
     if (json.status==="ok"){
         print_status("Screenshot taken!");
     } else {
@@ -667,7 +669,7 @@ $("#rootca").click(function() {
     $("#rootca").text("Remove MobSF RootCA");
     act = "install";
   }
-  action('../mobsf_ca/', {action: act}, function(json) {
+  action('../mobsf_ca/', {action: act, port: '{{ port }}'}, function(json) {
       if (json.message === "installed")
         print_status("MobSF RootCA installed successfully");
       else if (json.message === "removed")
@@ -679,7 +681,7 @@ $("#rootca").click(function() {
 });
 
 function activity_tester(test){
-  action('../activity_tester/', {hash: '{{ md5 }}', package: '{{ package }}', 'test': test}, function(json) {
+  action('../activity_tester/', {hash: '{{ md5 }}', package: '{{ package }}', port: '{{ port }}', 'test': test}, function(json) {
     if (json.status === "ok")
       if (test === 'exported')
         print_status("Exported Activity testing completed.");
@@ -691,21 +693,21 @@ function activity_tester(test){
 }
 //Start ExportedActivity Tester
 $("#expactt").click(function()  {
-  print_status("Starting Exported Activity tester...")
-  activity_tester('exported')
+  print_status("Starting Exported Activity tester...");
+  activity_tester('exported');
   return false;
 });
 
 //Start Activity Tester
 $("#actt").click(function()  {
-  print_status("Starting Activity tester...")
-  activity_tester('all_activities')
+  print_status("Starting Activity tester...");
+  activity_tester('all_activities');
   return false;
 });
 
 //Start AppCrawler Fuzzer
      $("#appc").click(function()  {
-                        $('#stat').append("\nStarting AppCrawler Fuzzer...");
+                        print_status("\nStarting AppCrawler Fuzzer...");
                         $.ajax({
                                 url : "../AppCrawlerFuzzer/",
                                 type : "POST",
@@ -714,11 +716,11 @@ $("#actt").click(function()  {
                                     csrfmiddlewaretoken: '{{ csrf_token }}',
                                     md5: '{{ md5 }}',
                                     pkg: '{{ package }}',
+                                    port: '{{ port }}'
                                     },
                                     success : function(json) {
                                       if (json.appctest==="done"){
-                                  $('#stat').append("\nAppCrawler Fuzzing Completed.");
-                                  $('#stat').scrollTop($('#stat')[0].scrollHeight);
+                                  print_status("AppCrawler Fuzzing Completed.");
                                     }
 
                                     },
@@ -731,7 +733,7 @@ $("#actt").click(function()  {
 
      //Start Monkey Fuzzer
      $("#monk").click(function()  {
-                        $('#stat').append("\nStarting Monkey Fuzzer...");
+                        print_status("\nStarting Monkey Fuzzer...");
                         $.ajax({
                                 url : "../MonkeyFuzzer/",
                                 type : "POST",
@@ -740,11 +742,11 @@ $("#actt").click(function()  {
                                     csrfmiddlewaretoken: '{{ csrf_token }}',
                                     md5: '{{ md5 }}',
                                     pkg: '{{ package }}',
+                                    port: '{{ port }}'
                                     },
                                     success : function(json) {
                                       if (json.monktest==="done"){
-                                  $('#stat').append("\nMonkey Fuzzing Completed.");
-                                  $('#stat').scrollTop($('#stat')[0].scrollHeight);
+                                  print_status("Monkey Fuzzing Completed.");
                                     }
 
                                     },
@@ -807,6 +809,7 @@ $("#frida_spawn").click(function() {
       cls_search:  $('#cls_search').val(),
       cls_trace:  $('#cls_trace').val(),
       frida_code: editor.getDoc().getValue(),
+      port: '{{ port }}',
     }, function(json) {
     if (json.status === "ok")
       print_status("Successfully attached");
@@ -819,7 +822,7 @@ $("#frida_spawn").click(function() {
 
 //Dump App data
 function dump(){
-  action('../download_data/', { hash: '{{ md5 }}', package: '{{ package }}'}, function(json) {
+  action('../download_data/', { hash: '{{ md5 }}', package: '{{ package }}', port: '{{ port }}'}, function(json) {
     if (json.status==="ok"){
       print_status("Application data dumped!");
       print_status("Generating Report...Please Wait!");
@@ -838,7 +841,7 @@ $("#stop").one( "click", function() {
   var stext = $("#screen").text();
   if (stext === "Stop Screen")
     $("#screen").click();
-  action('../collect_logs/', { hash: '{{ md5 }}', package: '{{ package }}'}, function(json) {
+  action('../collect_logs/', { hash: '{{ md5 }}', package: '{{ package }}', port: '{{ port }}'}, function(json) {
     if (json.status==="ok"){
       $('#stop').addClass("btn btn-success");
       $('#stop').text("Please Wait...");

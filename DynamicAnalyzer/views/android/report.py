@@ -39,7 +39,7 @@ def view_report(request):
     """Dynamic Analysis Report Generation."""
     logger.info('Dynamic Analysis Report Generation')
     try:
-        env = Environment()
+        # env = Environment()
         md5_hash = request.GET['hash']
         package = request.GET['package']
         droidmon = {}
@@ -84,9 +84,9 @@ def view_report(request):
                    'title': 'Dynamic Analysis'}
         template = 'dynamic_analysis/android/dynamic_report.html'
 
-        adb = "adb"
-        env.stop_avd(adb)
-        env.delete_avd(settings.AVD_PATH, settings.AVD_DUP_NAME)
+        # adb = "adb"
+        # env.stop_avd(adb)
+        # env.delete_avd(settings.AVD_PATH, settings.AVD_DUP_NAME)
 
         return render(request, template, context)
     except Exception as exp:

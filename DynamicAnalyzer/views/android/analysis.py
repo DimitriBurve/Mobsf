@@ -27,6 +27,8 @@ def run_analysis(apk_dir, md5_hash, package):
     clipboard = []
     # Collect Log data
     datas = get_log_data(apk_dir, package)
+    print("[INFO] Datas : ")
+    print(datas)
     clip_tag = 'I/CLIPDUMP-INFO-LOG'
     clip_tag2 = 'I CLIPDUMP-INFO-LOG'
     # Collect Clipboard

@@ -6,6 +6,7 @@
     {% block extra_css %}
     <!-- DataTables -->
     <link rel="stylesheet" href="{% static "adminlte/plugins/datatables-bs4/dataTables.bootstrap4.min.css" %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
      <style type="text/css" media="print">
         @page { size: landscape; }
         @media print {
@@ -189,6 +190,14 @@
             </p>
             </a>
           </li>
+        <li class="nav-item">
+              <a href="../android_dynamic/?hash={{md5}}&amp;package={{package}}" class="nav-link">
+              <i class="nav-icon fa fa-play-circle"></i>
+              <p>
+                Restart Dynamic Analysis
+              </p>
+             </a>
+            </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
@@ -224,6 +233,7 @@
                 <div class="col-12">
                   <p><strong><i class="fas fa-info-circle"></i> INFORMATION</strong></p>
                    <div align="center">
+                       <h2><strong>{{ package }}</strong></h2>
                       <p>
                       {% if apimon %}
                       <a target="_blank" class="btn btn-primary" role="button" href="../live_api/?hash={{ md5 }}&amp;package={{ package }}">API Monitor View</a>
@@ -485,7 +495,7 @@
                       <strong>City: </strong>{{details|key:"geolocation"|key:"city"}} <br/>
                       <strong>Latitude: </strong>{{details|key:"geolocation"|key:"latitude"}} <br/>
                       <strong>Longitude: </strong>{{details|key:"geolocation"|key:"longitude"}} <br/>
-                      <strong>View: <a target="_blank" href="http://maps.google.com/maps?q={{details|key:"geolocation"|key:"latitude"}},{{details|key:"geolocation"|key:"longitude"}}">Google Map</a>
+                        <strong>View: </strong><a target="_blank" href="http://maps.google.com/maps?q={{details|key:"geolocation"|key:"latitude"}},{{details|key:"geolocation"|key:"longitude"}}">Google Map</a>
 
                     {% else %}
                     No Geolocation information available.
@@ -662,21 +672,21 @@
 <!--end new UI-->
 {% block extra_scripts %}
 <!-- DataTables -->
-<script src="{% static "adminlte/plugins/datatables/jquery.dataTables.min.js" %} "></script>
-<script src="{% static "adminlte/plugins/datatables-bs4/dataTables.bootstrap4.min.js" %}"></script>
+{#<script src="{% static "adminlte/plugins/datatables/jquery.dataTables.min.js" %} "></script>#}
+{#<script src="{% static "adminlte/plugins/datatables-bs4/dataTables.bootstrap4.min.js" %}"></script>#}
 <script>
-  $(function () {
-    // Datatable
-    $('table').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": true,
-      "ordering": true,
-      "info": true,
-      "autoWidth": true,
-      "responsive": true,
-    });
-  });
+  {#$(function () {#}
+  {#  // Datatable#}
+  {#  $('table').DataTable({#}
+  {#    "paging": true,#}
+  {#    "lengthChange": false,#}
+  {#    "searching": true,#}
+  {#    "ordering": true,#}
+  {#    "info": true,#}
+  {#    "autoWidth": true,#}
+  {#    "responsive": true,#}
+  {#  });#}
+  {# });#}
   // Navbar Active
     $(".nav-link").on("click", function() {
     $(".nav-link").removeClass("active");

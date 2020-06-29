@@ -99,14 +99,19 @@ class Frida:
         else:
             print('[Frida] %s', message)
 
-    def connect(self):
+    def connect(self, port):
         """Connect to Frida Server."""
         session = None
         try:
             env = Environment()
             self.clean_up()
-            env.run_frida_server()
-            device = frida.get_device(get_device(), settings.FRIDA_TIMEOUT)
+            env.run_frida_server(port)
+            manager = frida.get_device_manager()
+            devices = manager.enumerate_devices()
+            for ldevice in devices:
+                print("[DEBUG] Device discovered : " + str(ldevice))
+            dev = str(env.identifier)+":5555"
+            device = frida.get_device(dev, settings.FRIDA_TIMEOUT)
             print("[INFO] before device.spawn")
             print("device :")
             print(device)
@@ -124,7 +129,7 @@ class Frida:
             print("[INFO] after run device.attach")
         except frida.ServerNotRunningError:
             logger.warning('Frida server is not running')
-            self.connect()
+            self.connect(port)
         except frida.TimedOutError:
             logger.error('Timed out while waiting for device to appear')
         except (frida.ProcessNotFoundError,

@@ -277,12 +277,12 @@ else:
 
     # FlowDroid
     JAVA_PATH_FLOWDROID_MAIN = "/media/dburveni/3806ab9d-f0d1-45c7-9d29-fbfb7f35ed85/mobsf/Mobile-Security-Framework" \
-                               "-MobSF-master/FlowDroid/soot-infoflow-cmd-jar-with-dependencies.jar"
+                               "-MobSF-master/FlowDroid/soot-infoflow-cmd-jar-with-dependencies.jar"  # à modifier
     SOURCES_AND_SINKS_PATH = "/media/dburveni/3806ab9d-f0d1-45c7-9d29-fbfb7f35ed85/mobsf/Mobile-Security-Framework" \
-                             "-MobSF-master/FlowDroid/soot-infoflow-android/SourcesAndSinks.txt"
+                             "-MobSF-master/FlowDroid/soot-infoflow-android/SourcesAndSinks.txt"  # à modifier
     ANDROID_PLATEFORM_BINARY = r"/home/dburveni/Android/Sdk/platforms/"  # à modifier
     RESULTS_FLOWDROID_PATH = r"/media/dburveni/3806ab9d-f0d1-45c7-9d29-fbfb7f35ed85/mobsf/Mobile-Security-Framework" \
-                             r"-MobSF-master/FlowDroid/Results/"
+                             r"-MobSF-master/FlowDroid/Results/"  # à modifier
 
     # Android 3P Tools
     JADX_BINARY = ''
@@ -317,7 +317,12 @@ else:
 
     # =======ANDROID DYNAMIC ANALYSIS SETTINGS===========
     # ANALYZER_IDENTIFIER = 'MobSF_AVD'
-    ANALYZER_IDENTIFIER = 'New_Device_API_23_DUP'
+    # ANALYZER_IDENTIFIER_0 = 'New_Device_API_27'
+    ANALYZER_IDENTIFIER_0 = '192.168.56.101:5555'
+    ANALYZER_IDENTIFIER_1 = '192.168.56.102:5555'
+    ANALYZER_IDENTIFIER_2 = '192.168.56.103:5555'
+    ANALYZER_IDENTIFIER_3 = '192.168.56.104:5555'
+    ANALYZER_IDENTIFIER_4 = '192.168.56.105:5555'
     FRIDA_TIMEOUT = 4
     # ==============================================
 
@@ -332,18 +337,54 @@ else:
     # below AVD settings yourself.
     AVD_EMULATOR = r"/home/dburveni/Android/Sdk/emulator/emulator"
     AVD_PATH = r"/home/dburveni/.android/avd/"
-    AVD_REFERENCE_NAME = r'New_Device_API_23'
-    AVD_DUP_NAME = r'New_Device_API_23_DUP'
-    AVD_ADB_PORT = 5554
+    AVD_REFERENCE_NAME_0 = r'New_Device_API_27'
+    AVD_DUP_NAME_0 = r'New_Device_API_27_DUP_0'
+    AVD_ADB_PORT_0 = 5560
+
+    AVD_REFERENCE_NAME_1 = r'New_Device_API_23_1'
+    AVD_DUP_NAME_1 = r'New_Device_API_27_DUP_1'
+    AVD_ADB_PORT_1 = 5565
+
+    AVD_REFERENCE_NAME_2 = r'New_Device_API_23_2'
+    AVD_DUP_NAME_2 = r'New_Device_API_27_DUP_2'
+    AVD_ADB_PORT_2 = 5570
+
+    AVD_REFERENCE_NAME_3 = r'New_Device_API_23_3'
+    AVD_DUP_NAME_3 = r'New_Device_API_27_DUP_3'
+    AVD_ADB_PORT_3 = 5575
+
+    AVD_REFERENCE_NAME_4 = r'New_Device_API_23_4'
+    AVD_DUP_NAME_4 = r'New_Device_API_27_DUP_4'
+    AVD_ADB_PORT_4 = 5580
     # ==============================================
 
     # ====ANDROID MOBSF VIRTUALBOX VM SETTINGS =====
+    PATH_GMTOOL = "/opt/genymobile/genymotion/gmtool"
+    PATH_GENYSHELL = "/opt/genymobile/genymotion/genyshell"
+    PATH_PLAYER = "/opt/genymobile/genymotion/player"
+
     # VM UUID
     UUID = 'e7da6e19-04e2-47e7-ab08-b40149965d59'
     # Snapshot UUID
     SUUID = '9a34c000-416a-408d-8afc-f1154b394b53'
     # IP of the MobSF VM
     VM_IP = '192.168.56.101'
+
+    NAME_GENY_0 = "Google_Pixel_3"
+    NAME_GENY_0_DUP = NAME_GENY_0+"_DUP"
+
+    NAME_GENY_1 = "Google_Pixel_3_1"
+    NAME_GENY_1_DUP = NAME_GENY_1 + "_DUP"
+
+    NAME_GENY_2 = "Google_Pixel_3_2"
+    NAME_GENY_2_DUP = NAME_GENY_2 + "_DUP"
+
+    NAME_GENY_3 = "Google_Pixel_3_3"
+    NAME_GENY_3_DUP = NAME_GENY_3 + "_DUP"
+
+    NAME_GENY_4 = "Google_Pixel_3_4"
+    NAME_GENY_4_DUP = NAME_GENY_4 + "_DUP"
+
     VM_ADB_PORT = 5555
     VM_TIMEOUT = 100
     # ==============================================

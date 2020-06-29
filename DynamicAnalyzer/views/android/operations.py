@@ -84,7 +84,7 @@ def mobsfy(request):
     try:
         identifier = request.POST['identifier']
         create_env = Environment(identifier)
-        if not create_env.connect_n_mount():
+        if not create_env.connect_n_mount_wo():
             msg = 'Connection failed'
             data = {'status': 'failed', 'message': msg}
             return json_response(data)
@@ -108,10 +108,12 @@ def execute_adb(request):
     """Execute ADB Commands."""
     data = {'status': 'ok', 'message': ''}
     cmd = request.POST['cmd']
+    port = request.POST['port']
+    identifier = get_device(port)
     if cmd:
-        args = [get_adb(),
+        args = ["adb",
                 '-s',
-                get_device(),
+                identifier,
                 'shell']
         try:
             proc = subprocess.Popen(args + cmd.split(' '),
@@ -136,7 +138,9 @@ def get_component(request):
     """Get Android Component."""
     data = {}
     try:
-        env = Environment()
+        port = request.POST['port']
+        identifier = get_device(port)
+        env = Environment(identifier, port)
         comp = request.POST['component']
         bin_hash = request.POST['hash']
         if is_attack_pattern(comp) or not is_md5(bin_hash):
@@ -157,7 +161,9 @@ def take_screenshot(request):
     logger.info('Taking screenshot')
     data = {}
     try:
-        env = Environment()
+        port = request.POST['port']
+        identifier = get_device(port)
+        env = Environment(identifier, port)
         bin_hash = request.POST['hash']
         if not is_md5(bin_hash):
             return invalid_params()
@@ -185,7 +191,9 @@ def screen_cast(request):
     """ScreenCast."""
     data = {}
     try:
-        env = Environment()
+        port = request.POST['port']
+        identifier = get_device(port)
+        env = Environment(identifier, port)
         trd = threading.Thread(target=env.screen_stream)
         trd.daemon = True
         trd.start()
@@ -193,6 +201,7 @@ def screen_cast(request):
     except Exception as exp:
         logger.exception('Screen streaming')
         data = {'status': 'failed', 'message': str(exp)}
+    print(["[INFO] data screencast : " + str(data)])
     return json_response(data)
 
 # AJAX
@@ -203,7 +212,9 @@ def touch(request):
     """Sending Touch Events."""
     data = {}
     try:
-        env = Environment()
+        port = request.POST['port']
+        identifier = get_device(port)
+        env = Environment(identifier, port)
         x_axis = request.POST['x']
         y_axis = request.POST['y']
         if not is_number(x_axis) and not is_number(y_axis):
@@ -232,7 +243,9 @@ def mobsf_ca(request):
     """Install and Remove MobSF Proxy RootCA."""
     data = {}
     try:
-        env = Environment()
+        port = request.POST['port']
+        identifier = get_device(port)
+        env = Environment(identifier, port)
         action = request.POST['action']
         if action == 'install':
             env.install_mobsf_ca(action)
@@ -256,6 +269,7 @@ def appcrawler_fuzzer(request):
     try:
         md5_hash = request.POST['md5']
         package = request.POST['pkg']
+        port = request.POST['port']
         if re.match('^[0-9a-f]{32}$', md5_hash):
             if re.findall(r";|\$\(|\|\||&&", package):
                 print("[ATTACK] Possible RCE")
@@ -265,9 +279,12 @@ def appcrawler_fuzzer(request):
                 toolsdir = os.path.join(
                     base_dir, 'DynamicAnalyzer/tools/')  # TOOLS DIR
                 data = {}
-                adb = get_adb()
+                adb = "adb"
+                identifier = get_device(port)
                 subprocess.call(
                     [adb,
+                     "-s",
+                     identifier,
                      "install",
                      "-r",
                      "/media/dburveni/3806ab9d-f0d1-45c7-9d29-fbfb7f35ed85/mobsf/Audit/_PLATFORM_INSTALLATION_/app"
@@ -275,6 +292,8 @@ def appcrawler_fuzzer(request):
                 )
                 subprocess.call(
                     [adb,
+                     "-s",
+                     identifier,
                      "install",
                      "-r",
                      "/media/dburveni/3806ab9d-f0d1-45c7-9d29-fbfb7f35ed85/mobsf/Audit/_PLATFORM_INSTALLATION_/app"
@@ -284,7 +303,7 @@ def appcrawler_fuzzer(request):
                 subprocess.call(
                     [adb,
                      "-s",
-                     get_device(),
+                     identifier,
                      "shell",
                      "am",
                      "instrument",
@@ -294,10 +313,10 @@ def appcrawler_fuzzer(request):
                      "-w",
                      "com.eaway.appcrawler.test/android.support.test.runner.AndroidJUnitRunner"])
                 # AVD is much slower, it should get extra time
-                if settings.ANALYZER_IDENTIFIER == "New_Device_API_23_DUP":
-                    wait(8)
-                else:
-                    wait(4)
+                # if settings.ANALYZER_IDENTIFIER == "New_Device_API_23_DUP":
+                #     wait(8)
+                # else:
+                wait(5)
 
                 # wait(120)
                 # subprocess.call([adb,
@@ -327,6 +346,7 @@ def monkey_fuzzer(request):
     try:
         md5_hash = request.POST['md5']
         package = request.POST['pkg']
+        port = request.POST['port']
         if re.match('^[0-9a-f]{32}$', md5_hash):
             if re.findall(r";|\$\(|\|\||&&", package):
                 print("[ATTACK] Possible RCE")
@@ -336,11 +356,12 @@ def monkey_fuzzer(request):
                 toolsdir = os.path.join(
                     base_dir, 'DynamicAnalyzer/tools/')  # TOOLS DIR
                 data = {}
-                adb = get_adb()
+                adb = "adb"
+                identifier = get_device(port)
                 subprocess.call(
                     [adb,
-                     "-s",
-                     get_device(),
+                      "-s",
+                     identifier,
                      "shell",
                      "monkey",
                      "-p",
@@ -366,10 +387,10 @@ def monkey_fuzzer(request):
                      "-v",
                      settings.MONKEY_EVENTS])
                 # AVD is much slower, it should get extra time
-                if settings.ANALYZER_IDENTIFIER == "New_Device_API_23_DUP":
-                    wait(8)
-                else:
-                    wait(4)
+                # if settings.ANALYZER_IDENTIFIER == "New_Device_API_23_DUP":
+                #     wait(8)
+                # else:
+                wait(6)
 
                 # subprocess.call([adb,
                 #                 "-s",

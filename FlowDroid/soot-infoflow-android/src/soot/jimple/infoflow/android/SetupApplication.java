@@ -146,6 +146,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 	protected IInPlaceInfoflow infoflow = null;
 
+	private int resCount;
+
 	/**
 	 * Class for aggregating the data flow results obtained through multiple runs of
 	 * the data flow solver.
@@ -1368,8 +1370,6 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		return resultAggregator.getAggregatedResults();
 	}
 
-	private int resCount;
-
 	/**
 	 * Runs the data flow analysis on the given entry point class
 	 * 
@@ -1465,6 +1465,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @param results The data flow results to write out
 	 * @param cfg     The control flow graph to use for writing out the results
+	 * @param resultLeaks number of leaks found
 	 */
 	private void serializeResults(InfoflowResults results, IInfoflowCFG cfg, Integer resultLeaks) {
 		String resultsFile = config.getAnalysisFileConfig().getOutputFile();

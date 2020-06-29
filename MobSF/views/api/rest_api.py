@@ -4,6 +4,10 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from DynamicAnalyzer.views.android.dynamic_analyzer import dynamic_analyzer
+from DynamicAnalyzer.views.android.environment import Environment
+from DynamicAnalyzer.views.android.operations import appcrawler_fuzzer, monkey_fuzzer
+from DynamicAnalyzer.views.android.tests_common import activity_tester, collect_logs
 from MobSF.utils import api_key
 from MobSF.views.helpers import request_method
 from MobSF.views.home import RecentScans, Upload, delete_scan
@@ -67,6 +71,28 @@ def api_scan(request):
         # APK, Android ZIP and iOS ZIP
         if scan_type in ['apk', 'zip']:
             resp = static_analyzer(request, True)
+            if scan_type == 'apk':
+                res_dyn = dynamic_analyzer(request, True)
+                print(res_dyn)
+                if res_dyn != "":
+                    post = request.POST.copy()
+                    post.appendlist('port', res_dyn['port'])
+                    post.appendlist('package', res_dyn['package'])
+                    post.appendlist('pkg', res_dyn['package'])
+                    post.appendlist('test', 'all_activities')
+                    post.appendlist('md5', request.POST['hash'])
+                    request.POST = post
+                    print(request.POST['package'])
+                    print(request.POST['port'])
+                    print(request.POST['hash'])
+                    activity_tester(request)
+                    appcrawler_fuzzer(request)
+                    monkey_fuzzer(request)
+                    collect_logs(request)
+                    env = Environment(False, res_dyn['port'])
+                    env.stop_avd('adb')
+                else:
+                    return make_api_response({'error': 'Installation impossible'}, 500)
             if 'type' in resp:
                 # For now it's only ios_zip
                 request.POST._mutable = True

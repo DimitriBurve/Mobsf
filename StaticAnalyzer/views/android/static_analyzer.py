@@ -75,7 +75,7 @@ def wait(sec):
 def analyse_flowdroid(apk, file_res):
     commandFlowDroid = "java" + " -jar " + str(settings.JAVA_PATH_FLOWDROID_MAIN) + " -a " + str(
         apk) + " -p " + str(settings.ANDROID_PLATEFORM_BINARY) + " -s " + str(
-        settings.SOURCES_AND_SINKS_PATH) + " -cg CHA -cg AUTO -ca FAST -pr FAST -nc -dt 180 -o " + file_res
+        settings.SOURCES_AND_SINKS_PATH) + " -cg CHA -ca FAST -pr FAST -nc -dt 20 -o " + file_res
     os.system(commandFlowDroid)
 
 
