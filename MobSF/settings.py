@@ -297,6 +297,15 @@ else:
     VBOXMANAGE_BINARY = ''
     PYTHON3_PATH = ''
 
+    # FlowDroid
+    JAVA_PATH_FLOWDROID_MAIN = "/media/dburveni/3806ab9d-f0d1-45c7-9d29-fbfb7f35ed85/mobsf/Mobile-Security-Framework" \
+                               "-MobSF-master/FlowDroid/soot-infoflow-cmd-jar-with-dependencies.jar"  # à modifier
+    SOURCES_AND_SINKS_PATH = "/media/dburveni/3806ab9d-f0d1-45c7-9d29-fbfb7f35ed85/mobsf/Mobile-Security-Framework" \
+                             "-MobSF-master/FlowDroid/soot-infoflow-android/SourcesAndSinks.txt"  # à modifier
+    ANDROID_PLATEFORM_BINARY = r"/home/dburveni/Android/Sdk/platforms/"  # à modifier
+    RESULTS_FLOWDROID_PATH = r"/media/dburveni/3806ab9d-f0d1-45c7-9d29-fbfb7f35ed85/mobsf/Mobile-Security-Framework" \
+                             r"-MobSF-master/FlowDroid/Results/"  # à modifier
+
     """
     Examples:
     JAVA_DIRECTORY = 'C:/Program Files/Java/jdk1.7.0_17/bin/'
@@ -314,6 +323,52 @@ else:
     # =======ANDROID DYNAMIC ANALYSIS SETTINGS===========
     ANALYZER_IDENTIFIER = ''
     FRIDA_TIMEOUT = 4
+
+    PATH_GMTOOL = "/opt/genymobile/genymotion/gmtool"
+    PATH_GENYSHELL = "/opt/genymobile/genymotion/genyshell"
+    PATH_PLAYER = "/opt/genymobile/genymotion/player"
+
+    NAME_GENY_0 = "Google_Pixel_3"
+    NAME_GENY_0_DUP = NAME_GENY_0 + "_DUP"
+
+    NAME_GENY_1 = "Google_Pixel_3_1"
+    NAME_GENY_1_DUP = NAME_GENY_1 + "_DUP"
+
+    NAME_GENY_2 = "Google_Pixel_3_2"
+    NAME_GENY_2_DUP = NAME_GENY_2 + "_DUP"
+
+    NAME_GENY_3 = "Google_Pixel_3_3"
+    NAME_GENY_3_DUP = NAME_GENY_3 + "_DUP"
+
+    NAME_GENY_4 = "Google_Pixel_3_4"
+    NAME_GENY_4_DUP = NAME_GENY_4 + "_DUP"
+
+    # =========== FUZZING TOOLS SETTING ============
+    # APPCRAWLER
+    APPCRAWLER_ENABLED = True
+    # MONKEY
+    MONKEY_ENABLED = True
+    # Number of events in a fuzzing streak
+    MONKEY_EVENTS = "1000"
+    # Pause between actions (milliseconds)
+    MONKEY_THROTTLE = "500"
+    # Percentage of touch events: down, up
+    MONKEY_PCT_TOUCH = "25"
+    # Percentage of motion events: down, movements, up
+    MONKEY_PCT_MOTION = "50"
+    # Percentage of trackball events: movements, click
+    MONKEY_PCT_TRACKBALL = "25"
+    # Percentage of navigation events: up/down/left/right from input device
+    MONKEY_PCT_NAV = "0"
+    # Percentage of major navigation events: center, back, menu
+    MONKEY_PCT_MAJORNAV = "0"
+    # Percentage of system keys events: home, back, volume
+    MONKEY_PCT_SYSKEYS = "0"
+    # Percentage of activity launches
+    MONKEY_PCT_APPSWITCH = "0"
+    # Percentage of other events: keypresses etc.
+    MONKEY_PCT_ANYEVENT = "0"
+
     # ==============================================
 
     # ================HTTPS PROXY ===============

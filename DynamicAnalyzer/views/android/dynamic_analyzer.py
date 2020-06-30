@@ -2,6 +2,7 @@
 """Android Dynamic Analysis."""
 import logging
 import os
+import subprocess
 import time
 
 from shelljob import proc
@@ -28,15 +29,98 @@ from MobSF.utils import (get_device,
 from StaticAnalyzer.models import StaticAnalyzerAndroid
 
 logger = logging.getLogger(__name__)
+tab_avd = [settings.AVD_DUP_NAME_0, settings.AVD_DUP_NAME_1, settings.AVD_DUP_NAME_2, settings.AVD_DUP_NAME_3,
+           settings.AVD_DUP_NAME_4]
+tab_avd_running = []
+tab_avd_not_running = []
 
 
-def dynamic_analysis(request):
+def check_name_avd(name):
+    cmd = settings.PATH_GENYSHELL + " -c \"devices show\" | grep On | grep '" + name + "$'"
+    # print("[DEBUG] cmd check avd name : " + str(args))
+    # result_cmd = subprocess.run(args, stdout=subprocess.PIPE).stdout.decode('utf-8')
+    result_cmd = os.popen(cmd).read()
+    # print("[DEBUG] res_cm dev show grep true : " + str(result_cmd))
+    if result_cmd != "":
+        return True
+    else:
+        return False
+
+
+def check_is_avd_running(name):
+    # emulator = "emulator-"+str(port)
+    # cmd = "adb devices | grep " + emulator
+    cmd = ["adb", "devices"]
+    # result_cmd = os.system(cmd)
+    print("[INFO] cmd : " + str(cmd))
+    result_cmd = subprocess.run(cmd, stdout=subprocess.PIPE).stdout.decode('utf-8')
+    result_cmd_devices = result_cmd.split("attached")[1].split("\n")
+    for device_and_state in result_cmd_devices:
+        tab_temp = device_and_state.split("\t")
+        device = tab_temp[0]
+        # if device == emulator:
+        return check_name_avd(device)
+
+
+def add_avd_in_tab(avds):
+    for name, is_running in avds.items():
+        if not is_running:
+            if name not in tab_avd_not_running:
+                tab_avd_not_running.append(name)
+                if name in tab_avd_running:
+                    tab_avd_running.remove(name)
+
+        else:
+            if name not in tab_avd_running:
+                tab_avd_running.append(name)
+            else:
+                index_port = tab_avd_running.index(name)
+                tab_avd_running.insert(len(tab_avd_running), tab_avd_running.pop(index_port))
+
+
+def select_avd_name():
+    if len(tab_avd_not_running) > 0:
+        name = tab_avd_not_running[0]
+        if name not in tab_avd_running:
+            tab_avd_running.append(tab_avd_not_running.pop(0))
+        else:
+            index_port = tab_avd_running.index(name)
+            tab_avd_running.insert(len(tab_avd_running), tab_avd_running.pop(index_port))
+    else:
+        name = tab_avd_running[0]
+
+    return name
+
+
+def avd_free():
+    avds = {settings.NAME_GENY_0_DUP: check_is_avd_running(settings.NAME_GENY_0_DUP),
+            settings.NAME_GENY_1_DUP: check_is_avd_running(settings.NAME_GENY_1_DUP),
+            settings.NAME_GENY_2_DUP: check_is_avd_running(settings.NAME_GENY_2_DUP),
+            settings.NAME_GENY_3_DUP: check_is_avd_running(settings.NAME_GENY_3_DUP),
+            settings.NAME_GENY_4_DUP: check_is_avd_running(settings.NAME_GENY_4_DUP)}
+
+    print("[DEBUG] list avds (true or false) : " + str(avds))
+    add_avd_in_tab(avds)
+    print("[INFO] tab avds no running :")
+    print(tab_avd_not_running)
+    print("[INFO] tab avds running :")
+    print(tab_avd_running)
+    name = select_avd_name()
+    print("[INFO] port selected : " + str(name))
+    return name
+
+
+def end_avd_running(port):
+    tab_avd_not_running.append(tab_avd_running.pop(port))
+
+
+def dynamic_analysis(request, name):
     """Android Dynamic Analysis Entry point."""
     try:
         apks = StaticAnalyzerAndroid.objects.filter(
             APP_TYPE='apk').order_by('-id')
         try:
-            identifier = get_device()
+            identifier = get_device(name)
         except Exception:
             msg = ('Is Andoird VM running? MobSF cannot'
                    ' find android instance identifier.'
@@ -50,7 +134,9 @@ def dynamic_analysis(request):
                    'proxy_ip': proxy_ip,
                    'proxy_port': settings.PROXY_PORT,
                    'title': 'MobSF Dynamic Analysis',
-                   'version': settings.MOBSF_VER}
+                   'version': settings.MOBSF_VER,
+                   'appcrawler': settings.APPCRAWLER_ENABLED,
+                   'monkey': settings.MONKEY_ENABLED}
         template = 'dynamic_analysis/dynamic_analysis.html'
         return render(request, template, context)
     except Exception as exp:
@@ -59,19 +145,27 @@ def dynamic_analysis(request):
                                            exp)
 
 
-def dynamic_analyzer(request):
+def dynamic_analyzer(request, name, api=False):
     """Android Dynamic Analyzer Environment."""
     logger.info('Creating Dynamic Analysis Environment')
     try:
-        bin_hash = request.GET['hash']
-        package = request.GET['package']
+        if api:
+            bin_hash = request.POST['hash']
+            filename = request.POST['file_name']
+            apk = StaticAnalyzerAndroid.objects.get(FILE_NAME=filename)
+            field_name = "PACKAGE_NAME"
+            package = apk.PACKAGE_NAME
+        else:
+            bin_hash = request.GET['hash']
+            package = request.GET['package']
+
         no_device = False
         if (is_attack_pattern(package)
                 or not is_md5(bin_hash)):
             return print_n_send_error_response(request,
                                                'Invalid Parameters')
         try:
-            identifier = get_device()
+            identifier = get_device(name)
         except Exception:
             no_device = True
         if no_device or not identifier:
@@ -81,7 +175,7 @@ def dynamic_analyzer(request):
                    ' this page. If this error persists,'
                    ' set ANALYZER_IDENTIFIER in MobSF/settings.py')
             return print_n_send_error_response(request, msg)
-        env = Environment(identifier)
+        env = Environment(identifier, name)
         if not env.connect_n_mount():
             msg = 'Cannot Connect to ' + identifier
             return print_n_send_error_response(request, msg)
@@ -122,7 +216,9 @@ def dynamic_analyzer(request):
         app_dir = os.path.join(settings.UPLD_DIR,
                                bin_hash + '/')  # APP DIRECTORY
         apk_path = app_dir + bin_hash + '.apk'  # APP PATH
-        env.adb_command(['install', '-r', apk_path], False, True)
+        if env.adb_command(['install', '-g', apk_path], False, True) is None:
+            env.stop_avd(name)
+            return ""
         logger.info('Testing Environment is Ready!')
         context = {'screen_witdth': screen_width,
                    'screen_height': screen_height,
@@ -130,12 +226,18 @@ def dynamic_analyzer(request):
                    'md5': bin_hash,
                    'android_version': version,
                    'version': settings.MOBSF_VER,
-                   'title': 'Dynamic Analyzer'}
+                   'title': 'Dynamic Analyzer',
+                   'appcrawler': settings.APPCRAWLER_ENABLED,
+                   'monkey': settings.MONKEY_ENBLED,
+                   'name': name}
         template = 'dynamic_analysis/android/dynamic_analyzer.html'
         return render(request, template, context)
     except Exception:
         logger.exception('Dynamic Analyzer')
-        return print_n_send_error_response(request,
+        if api:
+            return ""
+        else:
+            return print_n_send_error_response(request,
                                            'Dynamic Analysis Failed.')
 
 

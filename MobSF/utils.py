@@ -312,26 +312,42 @@ def find_process_by(name):
     """Return a set of process path matching name."""
     proc = set()
     for p in psutil.process_iter(attrs=['name']):
-        if (name == p.info['name']):
+        if name == p.info['name']:
             proc.add(p.exe())
     return proc
 
 
-def get_device():
+def get_device(name):
     """Get Device."""
-    if os.getenv('ANALYZER_IDENTIFIER'):
-        return os.getenv('ANALYZER_IDENTIFIER')
-    if settings.ANALYZER_IDENTIFIER:
-        return settings.ANALYZER_IDENTIFIER
+    if name != "":
+        cmd = settings.PATH_GENYSHELL + " -c \"devices show\" | grep On | grep '" + name + "$'"
+        print("[DEBUG] in else of get_device")
+        print("[DEBUG] cmd check avd name : " + str(cmd))
+        # result_cmd = subprocess.run(args, stdout=subprocess.PIPE).stdout.decode('utf-8')
+        result_cmd = os.popen(cmd).read()
+        print("[DEBUG] res_cm dev show grep true : " + str(result_cmd))
+        if result_cmd != "":
+            result_cmd_split = result_cmd.split("\n")
+            print("[DEBUG] len result_cmd_split : " + str(len(result_cmd_split)))
+            if len(result_cmd_split) > 1:
+                for item in result_cmd_split[:len(result_cmd_split) - 1]:
+                    tab_temp = item.split("|")
+                    ip_device = tab_temp[4].strip()
+                    return ip_device
     else:
-        dev_id = ''
-        out = subprocess.check_output([get_adb(), 'devices']).splitlines()
-        if len(out) > 2:
-            dev_id = out[1].decode('utf-8').split('\t')[0]
-            return dev_id
-    logger.error('Is the Android VM running?\n'
-                 'MobSF cannot identify device id.\n'
-                 'Please set ANALYZER_IDENTIFIER in MobSF/settings.py')
+        if os.getenv('ANALYZER_IDENTIFIER'):
+            return os.getenv('ANALYZER_IDENTIFIER')
+        if settings.ANALYZER_IDENTIFIER:
+            return settings.ANALYZER_IDENTIFIER
+        else:
+            dev_id = ''
+            out = subprocess.check_output([get_adb(), 'devices']).splitlines()
+            if len(out) > 2:
+                dev_id = out[1].decode('utf-8').split('\t')[0]
+                return dev_id
+        logger.error('Is the Android VM running?\n'
+                     'MobSF cannot identify device id.\n'
+                     'Please set ANALYZER_IDENTIFIER in MobSF/settings.py')
 
 
 def get_adb():

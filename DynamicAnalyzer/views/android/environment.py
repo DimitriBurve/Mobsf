@@ -2,6 +2,7 @@
 """Dynamic Analyzer Helpers."""
 import logging
 import os
+import platform
 import re
 import shutil
 import subprocess
@@ -11,6 +12,7 @@ import time
 from django.conf import settings
 
 from OpenSSL import crypto
+from termcolor import colored
 
 from DynamicAnalyzer.tools.webproxy import (
     get_ca_file,
@@ -34,11 +36,12 @@ ANDROID_API_SUPPORTED = 28
 
 class Environment:
 
-    def __init__(self, identifier=None):
+    def __init__(self, identifier=None, name=None):
+        self.name = name
         if identifier:
             self.identifier = identifier
         else:
-            self.identifier = get_device()
+            self.identifier = get_device(self.name)
         self.tools_dir = settings.TOOLS_DIR
 
     def wait(self, sec):
@@ -59,6 +62,18 @@ class Environment:
         self.wait(2)
         return self.check_connect_error(out)
 
+    def avd_reference_name(self):
+        if self.name == settings.NAME_GENY_0_DUP:
+            return [settings.NAME_GENY_0, settings.NAME_GENY_0_DUP]
+        elif self.name == settings.NAME_GENY_1_DUP:
+            return [settings.NAME_GENY_1, settings.NAME_GENY_1_DUP]
+        elif self.name == settings.NAME_GENY_2_DUP:
+            return [settings.NAME_GENY_2, settings.NAME_GENY_2_DUP]
+        elif self.name == settings.NAME_GENY_3_DUP:
+            return [settings.NAME_GENY_3, settings.NAME_GENY_3_DUP]
+        elif self.name == settings.NAME_GENY_4_DUP:
+            return [settings.NAME_GENY_4, settings.NAME_GENY_4_DUP]
+
     def connect_n_mount(self):
         """Test ADB Connection."""
         self.adb_command(['kill-server'])
@@ -67,7 +82,7 @@ class Environment:
         self.wait(2)
         logger.info('Connecting to Android %s', self.identifier)
         if not self.run_subprocess_verify_output([get_adb(),
-                                                 'connect',
+                                                  'connect',
                                                   self.identifier]):
             return False
         logger.info('Restarting ADB Daemon as root')
@@ -319,7 +334,7 @@ class Environment:
         if b'EMULATOR' in out:
             return 'emulator'
         elif (b'genymotion' in out.lower()
-                or any(char.isdigit() for char in ver)):
+              or any(char.isdigit() for char in ver)):
             return 'genymotion'
         else:
             return ''
@@ -555,9 +570,131 @@ class Environment:
                     'shell',
                     '/system/fd_server']
             subprocess.call(argz, stdout=fnull, stderr=subprocess.STDOUT)
+
         trd = threading.Thread(target=start_frida)
         trd.daemon = True
         trd.start()
         logger.info('Starting Frida Server')
         logger.info('Waiting for 2 seconds...')
         time.sleep(2)
+
+    def start_avd(self, emulator, avd_name, emulator_port):
+        """Start AVD"""
+        print("\n[INFO] Starting MobSF Emulator")
+        try:
+            args = [
+                settings.PATH_GMTOOL,
+                "admin",
+                "start",
+                avd_name
+                # "Google Pixel 3"
+            ]
+
+            print("TOTO")
+
+            if platform.system() == 'Darwin':
+                # There is a strage error in mac with the dyld one in a while..
+                # this should fix it..
+                if 'DYLD_FALLBACK_LIBRARY_PATH' in os.environ.keys():
+                    del os.environ['DYLD_FALLBACK_LIBRARY_PATH']
+
+            subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+            print("TOTO2")
+
+            time.sleep(10)
+            self.identifier = get_device(avd_name)
+            print(str(self.identifier))
+            if not self.identifier:
+                time.sleep(10)
+                self.identifier = get_device(self.name)
+            time.sleep(5)
+            args = ["adb",
+                    "-s",
+                    self.identifier,
+                    "wait-for-device"]
+
+        except:
+            print(colored("[ERROR] Starting MobSF Emulator", "red"))
+
+    def stop_avd(self, name):
+        """Stop AVD"""
+        print("\n[INFO] Stopping MobSF Emulator")
+        try:
+            # adb -s emulator-xxxx emu kill
+            FNULL = open(os.devnull, 'w')
+            # args = [adb, '-s', self.identifier, 'emu', 'kill']
+            args = [settings.PATH_GMTOOL,
+                    "admin",
+                    "stop",
+                    name
+                    # "Google Pixel 3"
+                    ]
+            subprocess.call(args, stderr=FNULL)
+            # os.system("adb emu kill")
+        except:
+            print(colored("[ERROR] Stopping MobSF Emulator", "red"))
+
+    def delete_avd(self, avd_name):
+        """Delete AVD"""
+        print("\n[INFO] Deleting emulator files")
+        try:
+            # config_file = os.path.join(avd_path, avd_name + '.ini')
+            # if os.path.exists(config_file):
+            #     os.remove(config_file)
+            # '''
+            # # todo: Sometimes there is an error here because of the locks that avd
+            # # does - check this out
+            # '''
+            # avd_folder = os.path.join(avd_path, avd_name + '.avd')
+            # if os.path.isdir(avd_folder):
+            #     shutil.rmtree(avd_folder)
+            FNULL = open(os.devnull, 'w')
+            # args = [adb, '-s', self.identifier, 'emu', 'kill']
+            args = [settings.PATH_GMTOOL,
+                    "admin",
+                    "delete",
+                    avd_name,
+                    ]
+            subprocess.call(args, stderr=FNULL)
+        except:
+            print(colored("[ERROR] Deleting emulator files", "red"))
+
+    def duplicate_avd(self, reference_name, dup_name):
+        """Duplicate AVD"""
+        print("\n[INFO] Duplicating MobSF Emulator")
+        try:
+            FNULL = open(os.devnull, 'w')
+            # args = [adb, '-s', self.identifier, 'emu', 'kill']
+            args = [settings.PATH_GMTOOL,
+                    "admin",
+                    "clone",
+                    reference_name,
+                    dup_name,
+                    "sdk_path=/usr/lib/android-sdk/"
+                    ]
+            subprocess.call(args, stderr=FNULL)
+        except:
+            print(colored("[ERROR] Duplicating MobSF Emulator", "red"))
+
+    def refresh_avd(self, adb, avd_path, reference_name, dup_name, emulator, port):
+        """Refresh AVD"""
+        print("\n[INFO] Refreshing MobSF Emulator")
+        try:
+            # Stop existing emulator on the spesified port
+            self.stop_avd(dup_name)
+
+            # Windows has annoying lock system, it takes time for it to remove the locks after we stopped the emulator
+            if platform.system() == 'Windows':
+                time.sleep(3)
+
+            # Delete old emulator
+            self.delete_avd(dup_name)
+
+            # Copy and replace the contents of the reference machine
+            self.duplicate_avd(reference_name, dup_name)
+
+            # Start emulator
+            self.start_avd(emulator, dup_name, port)
+        except:
+            print(colored("[ERROR] Refreshing MobSF VM", "red"))
