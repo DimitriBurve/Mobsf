@@ -4,6 +4,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from DynamicAnalyzer.views.android.dynamic_analyzer import dynamic_analyzer
 from MobSF.utils import api_key
 from MobSF.views.helpers import request_method
 from MobSF.views.home import RecentScans, Upload, delete_scan
@@ -76,6 +77,9 @@ def api_scan(request):
                 response = make_api_response(resp, 500)
             else:
                 response = make_api_response(resp, 200)
+
+            # Action automatiques pour analyse dynamique
+            dyn = dynamic_analyzer(request, True)
         # IPA
         elif scan_type == 'ipa':
             resp = static_analyzer_ios(request, True)

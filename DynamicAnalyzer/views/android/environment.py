@@ -36,13 +36,10 @@ ANDROID_API_SUPPORTED = 28
 
 class Environment:
 
-    def __init__(self, identifier=None, name=None):
+    def __init__(self, name=None):
         self.name = name
-        if identifier:
-            self.identifier = identifier
-        else:
-            self.identifier = get_device(self.name)
         self.tools_dir = settings.TOOLS_DIR
+        self.identifier = None
 
     def wait(self, sec):
         """Wait in Seconds."""
@@ -80,47 +77,55 @@ class Environment:
         self.adb_command(['start-server'])
         logger.info('ADB Restarted')
         self.wait(2)
-        logger.info('Connecting to Android %s', self.identifier)
-        if not self.run_subprocess_verify_output([get_adb(),
-                                                  'connect',
-                                                  self.identifier]):
-            return False
-        logger.info('Restarting ADB Daemon as root')
-        if not self.run_subprocess_verify_output([get_adb(), 'root']):
-            return False
-        logger.info('Reconnecting to Android Device')
-        # connect again with root adb
-        if not self.run_subprocess_verify_output([get_adb(),
-                                                  'connect',
-                                                  self.identifier]):
-            return False
-        # identify environment
-        runtime = self.get_environment()
-        if runtime == 'emulator':
-            logger.info('Found Android Studio Emulator')
-            # mount system
-            logger.info('Remounting')
-            self.adb_command(['remount'])
-        elif runtime == 'genymotion':
-            logger.info('Found Genymotion x86 VM')
-            # mount system
-            logger.info('Remounting /system')
-            self.adb_command(['mount', '-o',
-                              'rw,remount', '/system'], True)
-        else:
-            logger.error('Only Genymotion VM/Android Studio Emulator'
-                         ' is supported')
-            return False
-        logger.info('Performing System check')
-        if not self.system_check(runtime):
-            return False
+        logger.info('Connecting to Android %s', self.name)
+
+        toolsdir = os.path.join(settings.BASE_DIR, 'DynamicAnalyzer/tools/')  # TOOLS DIR
+        names = self.avd_reference_name()
+        self.refresh_avd(names[0], names[1])
+
+        # if not self.run_subprocess_verify_output([get_adb(),
+        #                                           'connect',
+        #                                           self.identifier]):
+        #     return False
+        # logger.info('Restarting ADB Daemon as root')
+        # if not self.run_subprocess_verify_output([get_adb(), 'root']):
+        #     return False
+        # logger.info('Reconnecting to Android Device')
+        # # connect again with root adb
+        # if not self.run_subprocess_verify_output([get_adb(),
+        #                                           'connect',
+        #                                           self.identifier]):
+        #     return False
+        # # identify environment
+        # runtime = self.get_environment()
+        # if runtime == 'emulator':
+        #     logger.info('Found Android Studio Emulator')
+        #     # mount system
+        #     logger.info('Remounting')
+        #     self.adb_command(['remount'])
+        # elif runtime == 'genymotion':
+        #     logger.info('Found Genymotion x86 VM')
+        #     # mount system
+        #     logger.info('Remounting /system')
+        #     self.adb_command(['mount', '-o',
+        #                       'rw,remount', '/system'], True)
+        # else:
+        #     logger.error('Only Genymotion VM/Android Studio Emulator'
+        #                  ' is supported')
+        #     return False
+        # logger.info('Performing System check')
+        # if not self.system_check(runtime):
+        #     return False
         return True
 
     def adb_command(self, cmd_list, shell=False, silent=False):
         """ADB Command wrapper."""
-        args = [get_adb(),
-                '-s',
-                self.identifier]
+        if self.identifier is None:
+            args = [get_adb()]
+        else:
+            args = [get_adb(),
+                    '-s',
+                    self.identifier]
         if shell:
             args += ['shell']
         args += cmd_list
@@ -578,9 +583,10 @@ class Environment:
         logger.info('Waiting for 2 seconds...')
         time.sleep(2)
 
-    def start_avd(self, emulator, avd_name, emulator_port):
+    def start_avd(self, avd_name):
         """Start AVD"""
         print("\n[INFO] Starting MobSF Emulator")
+        FNULL = open(os.devnull, 'w')
         try:
             args = [
                 settings.PATH_GMTOOL,
@@ -598,7 +604,7 @@ class Environment:
                 if 'DYLD_FALLBACK_LIBRARY_PATH' in os.environ.keys():
                     del os.environ['DYLD_FALLBACK_LIBRARY_PATH']
 
-            subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            subprocess.call(args, stderr=FNULL)
 
             print("TOTO2")
 
@@ -677,7 +683,7 @@ class Environment:
         except:
             print(colored("[ERROR] Duplicating MobSF Emulator", "red"))
 
-    def refresh_avd(self, adb, avd_path, reference_name, dup_name, emulator, port):
+    def refresh_avd(self, reference_name, dup_name):
         """Refresh AVD"""
         print("\n[INFO] Refreshing MobSF Emulator")
         try:
@@ -695,6 +701,6 @@ class Environment:
             self.duplicate_avd(reference_name, dup_name)
 
             # Start emulator
-            self.start_avd(emulator, dup_name, port)
+            self.start_avd(dup_name)
         except:
             print(colored("[ERROR] Refreshing MobSF VM", "red"))

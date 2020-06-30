@@ -29,8 +29,8 @@ from MobSF.utils import (get_device,
 from StaticAnalyzer.models import StaticAnalyzerAndroid
 
 logger = logging.getLogger(__name__)
-tab_avd = [settings.AVD_DUP_NAME_0, settings.AVD_DUP_NAME_1, settings.AVD_DUP_NAME_2, settings.AVD_DUP_NAME_3,
-           settings.AVD_DUP_NAME_4]
+tab_avd = [settings.NAME_GENY_0_DUP, settings.NAME_GENY_1_DUP, settings.NAME_GENY_2_DUP, settings.NAME_GENY_3_DUP,
+           settings.NAME_GENY_4_DUP]
 tab_avd_running = []
 tab_avd_not_running = []
 
@@ -114,24 +114,25 @@ def end_avd_running(port):
     tab_avd_not_running.append(tab_avd_running.pop(port))
 
 
-def dynamic_analysis(request, name):
+def dynamic_analysis(request):
     """Android Dynamic Analysis Entry point."""
     try:
         apks = StaticAnalyzerAndroid.objects.filter(
             APP_TYPE='apk').order_by('-id')
-        try:
-            identifier = get_device(name)
-        except Exception:
-            msg = ('Is Andoird VM running? MobSF cannot'
-                   ' find android instance identifier.'
-                   ' Please run an android instance and refresh'
-                   ' this page. If this error persists,'
-                   ' set ANALYZER_IDENTIFIER in MobSF/settings.py')
-            return print_n_send_error_response(request, msg)
-        proxy_ip = get_proxy_ip(identifier)
+        # try:
+        #     # name = avd_free()
+        #     identifier = get_device()
+        # except Exception:
+        #     msg = ('Is Andoird VM running? MobSF cannot'
+        #            ' find android instance identifier.'
+        #            ' Please run an android instance and refresh'
+        #            ' this page. If this error persists,'
+        #            ' set ANALYZER_IDENTIFIER in MobSF/settings.py')
+        #     return print_n_send_error_response(request, msg)
+        # proxy_ip = get_proxy_ip(identifier)
         context = {'apks': apks,
-                   'identifier': identifier,
-                   'proxy_ip': proxy_ip,
+                   # 'identifier': identifier,
+                   # 'proxy_ip': proxy_ip,
                    'proxy_port': settings.PROXY_PORT,
                    'title': 'MobSF Dynamic Analysis',
                    'version': settings.MOBSF_VER,
@@ -145,7 +146,7 @@ def dynamic_analysis(request, name):
                                            exp)
 
 
-def dynamic_analyzer(request, name, api=False):
+def dynamic_analyzer(request, api=False):
     """Android Dynamic Analyzer Environment."""
     logger.info('Creating Dynamic Analysis Environment')
     try:
@@ -164,20 +165,21 @@ def dynamic_analyzer(request, name, api=False):
                 or not is_md5(bin_hash)):
             return print_n_send_error_response(request,
                                                'Invalid Parameters')
-        try:
-            identifier = get_device(name)
-        except Exception:
-            no_device = True
-        if no_device or not identifier:
-            msg = ('Is the android instance running? MobSF cannot'
-                   ' find android instance identifier. '
-                   'Please run an android instance and refresh'
-                   ' this page. If this error persists,'
-                   ' set ANALYZER_IDENTIFIER in MobSF/settings.py')
-            return print_n_send_error_response(request, msg)
-        env = Environment(identifier, name)
+        name = avd_free()  # recherche d'un AVD de libre
+        # try:
+        #     identifier = get_device(name)
+        # except Exception:
+        #     no_device = True
+        # if no_device or not identifier:
+        #     msg = ('Is the android instance running? MobSF cannot'
+        #            ' find android instance identifier. '
+        #            'Please run an android instance and refresh'
+        #            ' this page. If this error persists,'
+        #            ' set ANALYZER_IDENTIFIER in MobSF/settings.py')
+        #     return print_n_send_error_response(request, msg)
+        env = Environment(name)
         if not env.connect_n_mount():
-            msg = 'Cannot Connect to ' + identifier
+            msg = 'Cannot Connect to ' + name
             return print_n_send_error_response(request, msg)
         version = env.get_android_version()
         logger.info('Android Version identified as %s', version)
