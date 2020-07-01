@@ -593,16 +593,9 @@ class Environment:
                 "admin",
                 "start",
                 avd_name
-                # "Google Pixel 3"
             ]
 
             print("TOTO")
-
-            if platform.system() == 'Darwin':
-                # There is a strage error in mac with the dyld one in a while..
-                # this should fix it..
-                if 'DYLD_FALLBACK_LIBRARY_PATH' in os.environ.keys():
-                    del os.environ['DYLD_FALLBACK_LIBRARY_PATH']
 
             subprocess.call(args, stderr=FNULL)
 
@@ -615,10 +608,10 @@ class Environment:
                 time.sleep(10)
                 self.identifier = get_device(self.name)
             time.sleep(5)
-            args = ["adb",
-                    "-s",
-                    self.identifier,
-                    "wait-for-device"]
+            # args = ["adb",
+            #         "-s",
+            #         self.identifier,
+            #         "wait-for-device"]
 
         except:
             print(colored("[ERROR] Starting MobSF Emulator", "red"))
@@ -627,17 +620,13 @@ class Environment:
         """Stop AVD"""
         print("\n[INFO] Stopping MobSF Emulator")
         try:
-            # adb -s emulator-xxxx emu kill
             FNULL = open(os.devnull, 'w')
-            # args = [adb, '-s', self.identifier, 'emu', 'kill']
             args = [settings.PATH_GMTOOL,
                     "admin",
                     "stop",
                     name
-                    # "Google Pixel 3"
                     ]
             subprocess.call(args, stderr=FNULL)
-            # os.system("adb emu kill")
         except:
             print(colored("[ERROR] Stopping MobSF Emulator", "red"))
 
@@ -645,18 +634,7 @@ class Environment:
         """Delete AVD"""
         print("\n[INFO] Deleting emulator files")
         try:
-            # config_file = os.path.join(avd_path, avd_name + '.ini')
-            # if os.path.exists(config_file):
-            #     os.remove(config_file)
-            # '''
-            # # todo: Sometimes there is an error here because of the locks that avd
-            # # does - check this out
-            # '''
-            # avd_folder = os.path.join(avd_path, avd_name + '.avd')
-            # if os.path.isdir(avd_folder):
-            #     shutil.rmtree(avd_folder)
             FNULL = open(os.devnull, 'w')
-            # args = [adb, '-s', self.identifier, 'emu', 'kill']
             args = [settings.PATH_GMTOOL,
                     "admin",
                     "delete",
@@ -671,7 +649,6 @@ class Environment:
         print("\n[INFO] Duplicating MobSF Emulator")
         try:
             FNULL = open(os.devnull, 'w')
-            # args = [adb, '-s', self.identifier, 'emu', 'kill']
             args = [settings.PATH_GMTOOL,
                     "admin",
                     "clone",
@@ -687,17 +664,13 @@ class Environment:
         """Refresh AVD"""
         print("\n[INFO] Refreshing MobSF Emulator")
         try:
-            # Stop existing emulator on the spesified port
+            # Stop existing emulator on the specified port
             self.stop_avd(dup_name)
-
-            # Windows has annoying lock system, it takes time for it to remove the locks after we stopped the emulator
-            if platform.system() == 'Windows':
-                time.sleep(3)
 
             # Delete old emulator
             self.delete_avd(dup_name)
 
-            # Copy and replace the contents of the reference machine
+            # Duplicate the referring machine
             self.duplicate_avd(reference_name, dup_name)
 
             # Start emulator
