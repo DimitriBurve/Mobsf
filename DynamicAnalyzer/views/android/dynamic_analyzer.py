@@ -231,9 +231,13 @@ def dynamic_analyzer(request, api=False):
                    'title': 'Dynamic Analyzer',
                    'appcrawler': settings.APPCRAWLER_ENABLED,
                    'monkey': settings.MONKEY_ENBLED,
-                   'name': name}
+                   'name': name,
+                   'env': env}
         template = 'dynamic_analysis/android/dynamic_analyzer.html'
-        return render(request, template, context)
+        if api:
+            return context
+        else:
+            return render(request, template, context)
     except Exception:
         logger.exception('Dynamic Analyzer')
         if api:

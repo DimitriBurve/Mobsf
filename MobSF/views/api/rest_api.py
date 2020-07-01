@@ -1,9 +1,10 @@
 # -*- coding: utf_8 -*-
 """MobSF REST API V 1."""
-
+import requests
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from DynamicAnalyzer.views.android import tests_common
 from DynamicAnalyzer.views.android.dynamic_analyzer import dynamic_analyzer
 from MobSF.utils import api_key
 from MobSF.views.helpers import request_method
@@ -80,6 +81,41 @@ def api_scan(request):
 
             # Action automatiques pour analyse dynamique
             dyn = dynamic_analyzer(request, True)
+            if dyn == "":
+                response = make_api_response(dyn, 500)
+            else:
+                # test all activities
+                context_activity_test = {
+                    'hash': dyn['md5'],
+                    'package': dyn['package'],
+                    'test': 'all_activities',
+                    'env': dyn['env']
+                }
+                resp_req = requests.post('../activity_tester/', data=context_activity_test)
+                if resp_req.status_code != "ok":
+                    response = make_api_response(resp_req, 500)
+                else:
+                    pass
+                    # load frida scripts
+                    # .
+                    # .
+                    # .
+                    # run appcrawler & monkey
+                    data_appcrawler_n_monkey = {
+                        'md5': dyn['md5'],
+                        'pkg': dyn['package'],
+                        'env': dyn['env']
+                    }
+                    resp_req = requests.post('../appcrawler_fuzzer/', data=data_appcrawler_n_monkey)
+                    if resp_req.status_code != "ok":
+                        response = make_api_response(resp_req, 500)
+                    else:
+                        resp_req = requests.post('../monkey_fuzzer/', data=data_appcrawler_n_monkey)
+                        if resp_req.status_code != "ok":
+                            response = make_api_response(resp_req, 500)
+                        else:
+                            response = make_api_response(resp_req, 200)
+
         # IPA
         elif scan_type == 'ipa':
             resp = static_analyzer_ios(request, True)

@@ -679,7 +679,7 @@ $("#rootca").click(function() {
 });
 
 function activity_tester(test){
-  action('../activity_tester/', {hash: '{{ md5 }}', package: '{{ package }}', 'test': test}, function(json) {
+  action('../activity_tester/', {hash: '{{ md5 }}', package: '{{ package }}', 'test': test, env: '{{ env }}'}, function(json) {
     if (json.status === "ok")
       if (test === 'exported')
         print_status("Exported Activity testing completed.");

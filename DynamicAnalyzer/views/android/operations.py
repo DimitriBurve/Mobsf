@@ -7,10 +7,13 @@ import random
 import re
 import subprocess
 import threading
+import time
 
 from django.conf import settings
 from django.http import HttpResponse
+from django.http.response import HttpResponseRedirect
 from django.views.decorators.http import require_http_methods
+from termcolor import colored
 
 from DynamicAnalyzer.views.android.environment import Environment
 
@@ -312,10 +315,10 @@ def appcrawler_fuzzer(request):
                 #                 "force-stop",
                 #                 package])
                 # print("\n[INFO] Stopping App")
-                data = {'appctest': 'done'}
-                return HttpResponse(json.dumps(data), content_type='application/json')
+                data = {'status': 'ok'}
+                return json_response(data)
     except:
-        PrintException("[ERROR] Appcrawler Fuzzer")
+        print(colored("[ERROR] Appcrawler Fuzzer", "red"))
         return HttpResponseRedirect('/error/')
 
 
@@ -385,8 +388,8 @@ def monkey_fuzzer(request):
                 #                 "force-stop",
                 #                 package])
                 # print "\n[INFO] Stopping App"
-                data = {'monktest': 'done'}
-                return HttpResponse(json.dumps(data), content_type='application/json')
+                data = {'status': 'ok'}
+                return json_response(data)
     except:
-        PrintException("[ERROR] Monkey Fuzzer")
+        print(colored("[ERROR] Monkey Fuzzer", "red"))
         return HttpResponseRedirect('/error/')

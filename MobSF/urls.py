@@ -90,6 +90,9 @@ urlpatterns = [
     url(r'^frida_logs/$', tests_frida.frida_logs),
     url(r'^list_frida_scripts/$', tests_frida.list_frida_scripts),
     url(r'^get_script/$', tests_frida.get_script),
+    # appcrawler & monkey fuzzer
+    url(r'^appcrawler_fuzzer/$', operations.appcrawler_fuzzer),
+    url(r'^monkey_fuzzer/$', operations.monkey_fuzzer),
 
 
     # Report

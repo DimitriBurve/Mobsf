@@ -30,7 +30,9 @@ def activity_tester(request):
     """Exported & non exported activity Tester."""
     data = {}
     try:
-        env = Environment()
+        env_post = request.POST['env']
+        # env = Environment()
+        env = env_post
         test = request.POST['test']
         md5_hash = request.POST['hash']
         package = request.POST['package']
