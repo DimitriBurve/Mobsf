@@ -95,7 +95,7 @@ def api_scan(request):
                 if resp_req.status_code != "ok":
                     response = make_api_response(resp_req, 500)
                 else:
-                    pass
+                    response = make_api_response(resp_req, 200)
                     # load frida scripts
                     # .
                     # .
@@ -110,6 +110,7 @@ def api_scan(request):
                     if resp_req.status_code != "ok":
                         response = make_api_response(resp_req, 500)
                     else:
+                        response = make_api_response(resp_req, 200)
                         resp_req = requests.post('../monkey_fuzzer/', data=data_appcrawler_n_monkey)
                         if resp_req.status_code != "ok":
                             response = make_api_response(resp_req, 500)
