@@ -95,7 +95,7 @@ try:
         sett = imp.load_source('user_settings', USER_CONFIG)
         locals().update(
             {k: v for k, v in list(sett.__dict__.items())
-                if not k.startswith('__')})
+             if not k.startswith('__')})
         CONFIG_HOME = True
     else:
         CONFIG_HOME = False
@@ -204,7 +204,8 @@ TEMPLATES = [
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 MEDIA_URL = '/uploads/'
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 # 256MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 268435456
@@ -370,7 +371,6 @@ else:
     # ==============================================
     # ^CONFIG-END^: Do not edit this line
 
-
 # Better logging
 LOGGING = {
     'version': 1,
@@ -417,7 +417,7 @@ LOGGING = {
             'handlers': ['console', 'logfile'],
             # DEBUG will log all queries, so change it to WARNING.
             'level': 'INFO',
-            'propagate': False,   # Don't propagate to other handlers
+            'propagate': False,  # Don't propagate to other handlers
         },
         'MobSF': {
             'handlers': ['console', 'logfile'],
