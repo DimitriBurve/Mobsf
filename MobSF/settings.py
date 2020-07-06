@@ -149,7 +149,7 @@ APPX_MIME = [
 # ===============================================
 
 # ============DJANGO SETTINGS =================
-DEBUG = True
+DEBUG = False
 DJANGO_LOG_LEVEL = DEBUG
 ALLOWED_HOSTS = ['127.0.0.1', 'mobsf', '*']
 # Application definition
