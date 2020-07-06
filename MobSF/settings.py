@@ -400,13 +400,13 @@ else:
 
     # -------External -----------------------------
     # Get AppMonsta API from https://appmonsta.com/dashboard/get_api_key/
-    APPMONSTA_API = ''
+    APPMONSTA_API = '5d72cda9ee59850dbd74a66807a22281fa802e4a'
 
     # ========DISABLED COMPONENTS===================
 
     # ----------VirusTotal--------------------------
-    VT_ENABLED = False
-    VT_API_KEY = ''
+    VT_ENABLED = True
+    VT_API_KEY = '8f1f740f383554ef525adfdd3893fc544ad823852849d244001d05a4bef1e392'
     VT_UPLOAD = False
     # Before setting VT_ENABLED to True,
     # Make sure VT_API_KEY is set to your VirusTotal API key

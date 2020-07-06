@@ -3,13 +3,13 @@ from django.db import models
 
 
 class RecentScansDB(models.Model):
-    FILE_NAME = models.CharField(max_length=260)
+    FILE_NAME = models.CharField(max_length=260, default='')
     MD5 = models.CharField(max_length=32)
     URL = models.URLField()
     TIMESTAMP = models.DateTimeField()
     APP_NAME = models.CharField(max_length=260)
-    PACKAGE_NAME = models.CharField(max_length=260)
-    VERSION_NAME = models.CharField(max_length=50)
+    PACKAGE_NAME = models.CharField(max_length=260, default='')
+    VERSION_NAME = models.CharField(max_length=50, default='')
 
 
 class StaticAnalyzerAndroid(models.Model):
