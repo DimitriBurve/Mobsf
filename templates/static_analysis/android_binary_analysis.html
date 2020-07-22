@@ -6,6 +6,7 @@
     {% block extra_css %}
     <!-- DataTables -->
     <link rel="stylesheet" href="{% static "adminlte/plugins/datatables-bs4/dataTables.bootstrap4.min.css" %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
      <style type="text/css" media="print">
         @page { size: landscape; }
         @media print {
@@ -126,6 +127,12 @@
                 <a href="#file_analysis" class="nav-link">
                   <i class="fa fa-file nav-icon"></i>
                   <p>File Analysis</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#FlowDroid_analysis" class="nav-link">
+                  <i class="fa fa-arrows-v nav-icon" aria-hidden="true"></i>
+                  <p>FlowDroid Analysis</p>
                 </a>
               </li>
             </ul>
@@ -1059,6 +1066,91 @@
     </div>
 </section>
  <!-- ===========================end file analysis ================================== -->
+<a id="FlowDroid_analysis" class="anchor"></a>
+ <section class="content">
+  <div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+              <p>
+             <strong><i class="fa fa-arrows-v" aria-hidden="true" ></i> FlowDroid ANALYSIS</strong>
+             </p>
+            <p><b>Leaks number : {{leaks_nb}}</b></p>
+              <div class="table-responsive">
+              <table id="table_flowdroid_source" class="table table-bordered table-hover table-striped" style="overflow:auto">
+                  <thead>
+                      <tr style="overflow:auto">
+                        <th style="overflow:auto">SINK STATEMENTS</th>
+                        <th style="overflow:auto">SINK METHODS</th>
+                        <th style="overflow:auto">SOURCE STATEMENTS</th>
+                        <th style="overflow:auto">SOURCE METHODS</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+
+                  {% for value in nb_res %}
+                  {% with int=value|stringformat:"s" %}
+                  {% with resstatementMethod="statementMethod"|add:int %}
+                  {% with resstatementFile="statementFile"|add:int %}
+                  {% with resmethodsMethod="methodsMethod"|add:int %}
+                  {% with resmethodsFile="methodsFile"|add:int %}
+                    <tr style="overflow:auto">
+                      <td style="overflow:auto"><B>File:</B> {{ sink|key:resstatementFile }}  <br> <B>Method:</B> {{ sink|key:resstatementMethod }} </td>
+                      <td style="overflow:auto"><B>File:</B> {{ sink|key:resmethodsFile }}  <br> <B>Method:</B> {{ sink|key:resmethodsMethod }}</td>
+                      <td style="overflow:auto">
+                        {% if source|key:resstatementFile|length > 1 %}
+                        {% for statementFile in source|key:resstatementFile %}
+                        {% for statementMethod in source|key:resstatementMethod %}
+                        {% if forloop.parentloop.counter == forloop.counter %}
+                          <B>File:</B>{{ statementFile }} <br> <B>Method:</B>{{ statementMethod }} <hr>
+                        {% endif %}
+                        {% endfor %}
+                        {% endfor %}
+
+                        {% else %}
+                        <B>File:</B> {{ source|key:resstatementFile }}  <br> <B>Method:</B> {{ source|key:resstatementMethod }}
+                        {% endif %}
+                      </td>
+                      <td style="overflow:auto">
+                        {% if source|key:resmethodsFile|length > 1 %}
+                        {% for methodsFile in source|key:resmethodsFile %}
+                        {% for methodsMethod in source|key:resmethodsMethod %}
+                        {% if forloop.parentloop.counter == forloop.counter %}
+                        <B>File:</B>{{ methodsFile }} <br> <B>Method:</B> {{ methodsMethod }} <hr>
+                        {% endif %}
+                        {% endfor %}
+                        {% endfor %}
+                        {% else %}
+                        <B>File:</B> {{ source|key:resmethodsFile }}  <br> <B>Method:</B> {{ source|key:resmethodsMethod }}
+                        {% endif %}
+                      </td>
+
+                    </tr>
+                  {% endwith %}
+                  {% endwith %}
+                  {% endwith %}
+                  {% endwith %}
+                  {% endwith %}
+                  {% endfor %}
+                    {% if not source  %}
+                       <tr>
+                         <td>
+                           <p> No issue found </p>
+                         </td>
+                       </tr>
+                    {% endif %}
+                    </tbody>
+                    </table>
+                  </div>
+          </div>
+        </div><!-- /.card -->
+        </div>
+        <!-- end row -->
+        </div>
+    </div>
+</section>
+  <!-- ===========================end FlowDroid analysis ================================== -->
  <a id="apkid" class="anchor"></a>
 <section class="content">
   <div class="container-fluid">

@@ -5,6 +5,8 @@ import logging
 import os
 import re
 import shutil
+import time
+from xml.dom import minidom
 
 import MalwareAnalyzer.views.Trackers as Trackers
 import MalwareAnalyzer.views.VirusTotal as VirusTotal
@@ -55,6 +57,19 @@ def key(data, key_name):
     return data.get(key_name)
 
 
+def wait(sec):
+    """Wait in Seconds."""
+    logger.info('Waiting for %s seconds...', str(sec))
+    time.sleep(sec)
+
+
+def analyse_flowdroid(apk, file_res):
+    commandFlowDroid = "java " + "-jar " + str(settings.JAVA_PATH_FLOWDROID_MAIN) + " -a " + str(
+        apk) + " -p " + str(settings.ANDROID_PLATEFORM_BINARY) + " -s " + str(
+        settings.SOURCES_AND_SINKS_PATH) + " -cg CHA -cg AUTO -ca FAST -pr FAST -nc -dt 180 -o " + file_res
+    os.system(commandFlowDroid)
+
+
 def static_analyzer(request, api=False):
     """Do static analysis on an request and save to db."""
     try:
@@ -91,6 +106,9 @@ def static_analyzer(request, api=False):
                 app_dic['dir'], 'StaticAnalyzer/tools/')  # TOOLS DIR
             logger.info('Starting Analysis on : %s', app_dic['app_name'])
 
+            sauvegarde_resultats = str(settings.RESULTS_FLOWDROID_PATH) + "" + str(
+                app_dic['md5']) + "-results_FlowDroid.xml"
+
             if typ == 'apk':
                 # Check if in DB
                 # pylint: disable=E1101
@@ -98,13 +116,19 @@ def static_analyzer(request, api=False):
                     MD5=app_dic['md5'])
                 if db_entry.exists() and rescan == '0':
                     context = get_context_from_db_entry(db_entry)
+                    if not is_file_exists(sauvegarde_resultats):
+                        analyse_flowdroid(app_dic['app_dir'], sauvegarde_resultats)
                 else:
+                    # FlowDroid analysis
+                    analyse_flowdroid(app_dic['app_dir'], sauvegarde_resultats)
+
                     app_dic['app_file'] = app_dic[
                         'md5'] + '.apk'  # NEW FILENAME
                     app_dic['app_path'] = (app_dic['app_dir']
                                            + app_dic['app_file'])  # APP PATH
 
                     # ANALYSIS BEGINS
+                    # Standard Analysis
                     app_dic['size'] = str(
                         file_size(app_dic['app_path'])) + 'MB'  # FILE SIZE
                     app_dic['sha1'], app_dic[
@@ -275,6 +299,84 @@ def static_analyzer(request, api=False):
                         os.path.join(app_dic['app_dir'],
                                      app_dic['md5']) + '.apk',
                         app_dic['md5'])
+
+                mydoc = minidom.parse(sauvegarde_resultats)
+                item_performance_entry = mydoc.getElementsByTagName('PerformanceEntry')
+                name_item_leaks = ''
+                value_leaks = ''
+                for elem in item_performance_entry:
+                    if elem.attributes['Name'].value == 'LeaksFound':
+                        name_item_leaks = elem.attributes['Name'].value
+                        value_leaks = elem.attributes['Value'].value
+
+                item_result_performance_entry = mydoc.getElementsByTagNameNS('*', 'Result')
+                dict_sources = {}
+                dict_sinks = {}
+                list_nb_sinks = []
+                i = 0
+                for res in item_result_performance_entry:
+                    item_performance_entry = res.getElementsByTagName('Source')
+                    print(item_performance_entry)
+                    values_methods_source_file = []  # Tableau valeurs methodes source
+                    values_methods_source_method = []
+                    values_statement_source_method = []  # Tableau declarations source
+                    values_statement_source_file = []
+                    for elem in item_performance_entry:
+                        temp = elem.attributes['Method'].value.replace("<", "")
+                        source_methods_var_final = temp.replace(">", "")
+                        source_methods_var_final_file = source_methods_var_final.split(":")[0]
+                        source_methods_var_final_method = source_methods_var_final.split(":")[1]
+                        values_methods_source_method.append(source_methods_var_final_method)
+                        values_methods_source_file.append(source_methods_var_final_file)
+
+                        source_statement_temp = elem.attributes['Statement'].value.split("<")
+                        source_statement_var_final = source_statement_temp[1].split(">")
+                        source_statement_var_final_file = source_statement_var_final[0].split(":")[0]
+                        source_statement_var_final_method = source_statement_var_final[0].split(":")[1]
+                        values_statement_source_method.append(source_statement_var_final_method)
+                        values_statement_source_file.append(source_statement_var_final_file)
+
+                    item_performance_entry = res.getElementsByTagName('Sink')
+                    values_methods_sink_file = []  # Tableau valeurs methodes sink
+                    values_methods_sink_method = []
+                    values_statement_sink_method = []
+                    values_statement_sink_file = []  # Tableau declarations du fichier des sink
+                    for elem in item_performance_entry:
+                        temp = elem.attributes['Method'].value.replace("<", "")
+                        sink_methods_var_final = temp.replace(">", "")
+                        sink_methods_var_final_file = sink_methods_var_final.split(":")[0]
+                        sink_methods_var_final_method = sink_methods_var_final.split(":")[1]
+                        values_methods_sink_file.append(sink_methods_var_final_file)
+                        values_methods_sink_method.append(sink_methods_var_final_method)
+
+                        sink_statement_temp = elem.attributes['Statement'].value.split("<")
+                        sink_statement_var_final = sink_statement_temp[1].split(">")
+                        sink_statement_var_final_file = sink_statement_var_final[0].split(":")[0]
+                        sink_statement_var_final_method = sink_statement_var_final[0].split(":")[1]
+                        values_statement_sink_file.append(sink_statement_var_final_file)
+                        values_statement_sink_method.append(sink_statement_var_final_method)
+                    dict_sources['result' + str(i)] = "res" + str(i)
+                    dict_sources['statementFile' + str(i)] = values_statement_source_file
+                    dict_sources['statementMethod' + str(i)] = values_statement_source_method
+                    dict_sources['methodsFile' + str(i)] = values_methods_source_file
+                    dict_sources['methodsMethod' + str(i)] = values_methods_source_method
+
+                    dict_sinks['result' + str(i)] = "res" + str(i)
+                    # print("[LOG] statementMethod : " + str(values_statement_sink_method))
+                    dict_sinks['statementFile' + str(i)] = values_statement_sink_file
+                    dict_sinks['statementMethod' + str(i)] = values_statement_sink_method
+                    dict_sinks['methodsFile' + str(i)] = values_methods_sink_file
+                    dict_sinks['methodsMethod' + str(i)] = values_methods_sink_method
+
+                    list_nb_sinks.append(i)
+                    i += 1
+
+                print("[INFO] Flowdroid Results")
+                context['leaks_nb'] = value_leaks
+                context['source'] = dict_sources
+                context['sink'] = dict_sinks
+                context['nb_res'] = list_nb_sinks
+
                 template = 'static_analysis/android_binary_analysis.html'
                 if api:
                     return context
