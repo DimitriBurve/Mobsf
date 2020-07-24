@@ -118,9 +118,15 @@ def api_scan(request):
                         else:
                             response = make_api_response(resp_req, 200)
 
-                    # stopper avd
-                    # delete avd
+            env = dyn['env']
+            # env.__class__ = Environment
+            avd_dup = env.get_avd_dup()
 
+            # stopper avd
+            env.stop_avd(avd_dup)
+
+            # delete avd
+            env.delete_avd(avd_dup)
 
         # IPA
         elif scan_type == 'ipa':

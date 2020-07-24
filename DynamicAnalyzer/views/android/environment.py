@@ -40,6 +40,7 @@ class Environment:
         self.name = name
         self.tools_dir = settings.TOOLS_DIR
         self.identifier = None
+        self.dup_name = None
 
     def wait(self, sec):
         """Wait in Seconds."""
@@ -81,6 +82,7 @@ class Environment:
 
         toolsdir = os.path.join(settings.BASE_DIR, 'DynamicAnalyzer/tools/')  # TOOLS DIR
         names = self.avd_reference_name()
+        self.dup_name = names[1]
         self.refresh_avd(names[0], names[1])
 
         # if not self.run_subprocess_verify_output([get_adb(),
@@ -677,3 +679,6 @@ class Environment:
             self.start_avd(dup_name)
         except:
             print(colored("[ERROR] Refreshing MobSF VM", "red"))
+
+    def get_avd_dup(self):
+        return self.dup_name
