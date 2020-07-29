@@ -37,29 +37,17 @@ tab_avd_not_running = []
 
 def check_name_avd(name):
     cmd = settings.PATH_GENYSHELL + " -c \"devices show\" | grep On | grep '" + name + "$'"
-    # print("[DEBUG] cmd check avd name : " + str(args))
-    # result_cmd = subprocess.run(args, stdout=subprocess.PIPE).stdout.decode('utf-8')
     result_cmd = os.popen(cmd).read()
     # print("[DEBUG] res_cm dev show grep true : " + str(result_cmd))
-    if result_cmd != "":
-        return True
-    else:
-        return False
+    return True if result_cmd != "" else False
+    # if result_cmd != "":
+    #     return True
+    # else:
+    #     return False
 
 
 def check_is_avd_running(name):
-    # emulator = "emulator-"+str(port)
-    # cmd = "adb devices | grep " + emulator
-    cmd = ["adb", "devices"]
-    # result_cmd = os.system(cmd)
-    print("[INFO] cmd : " + str(cmd))
-    result_cmd = subprocess.run(cmd, stdout=subprocess.PIPE).stdout.decode('utf-8')
-    result_cmd_devices = result_cmd.split("attached")[1].split("\n")
-    for device_and_state in result_cmd_devices:
-        tab_temp = device_and_state.split("\t")
-        device = tab_temp[0]
-        # if device == emulator:
-        return check_name_avd(device)
+    return check_name_avd(name)
 
 
 def add_avd_in_tab(avds):

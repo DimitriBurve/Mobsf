@@ -285,7 +285,7 @@ def appcrawler_fuzzer(request):
                      "install",
                      "-r",
                      "/media/dburveni/3806ab9d-f0d1-45c7-9d29-fbfb7f35ed85/mobsf/Audit/_PLATFORM_INSTALLATION_/app"
-                     "-crawler/AppCrawlerTest.apk"] # modifier PATH
+                     "-crawler/AppCrawlerTest.apk"]  # modifier PATH
                 )
                 print(package)
                 subprocess.call(
